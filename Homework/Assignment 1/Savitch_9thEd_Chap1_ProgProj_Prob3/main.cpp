@@ -21,6 +21,7 @@ int main(int argc, char** argv) {
     unsigned short nCents;
     //Input
     //Prompt User for number of quarters,dimes,nickels
+    cout<<"This program converts your quarters, dimes, and nickels to total cents."<<endl;
     cout<<"Enter in the number of quarters as xx"<<endl;
     cin>>nQuart;
     tQuart=nQuart*25;
