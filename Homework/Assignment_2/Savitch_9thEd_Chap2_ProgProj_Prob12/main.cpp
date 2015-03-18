@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
     float depFt, volCbFt, gal;//depth of well in feet, volume in cubic feet, gallons
     int radInch;//radius of well in inches
     //Input
-    cout<<"What is the radius in inches of the well casing?"<<endl;
+    cout<<"What is the radius of the well casing in inches?"<<endl;
     cin>>radInch;//users well radius in inches
     cout<<"What is the depth of the well in feet?"<<endl;
     cin>>depFt;//users well depth in feet

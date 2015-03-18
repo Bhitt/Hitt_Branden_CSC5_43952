@@ -11,16 +11,17 @@ using namespace std;
 //User Libraries
 
 //Global Constants
-const int GPPCNV = 454;
-const float SWTCNV = 0.001;
+const int GPPCNV = 454;//grams per pound
+
 //Function Prototypes
 
 //Execution Begins Here!
 int main(int argc, char** argv) {
     //Declare Variables
-    int uWght, soda=350, tGram;
-    float lethdos, sSoda;
-    char ans;
+    int uWght, soda=350, tGram;//user weight, soda in grams, total weight of user in grams
+    float lethdos, sSoda;//lethal amount of sweetener, safe amount of soda
+    char ans;//answer to yes or no repeat
+    const float SWTCNV = 0.001;//sweetener conversion
     //Input
     do{
     cout<<"How much will your end weight be in lbs after you are done dieting?"<<endl;

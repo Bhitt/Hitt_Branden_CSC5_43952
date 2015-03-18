@@ -17,10 +17,10 @@ using namespace std;
 //Execution Begins Here!
 int main(int argc, char** argv) {
     //Declare Variables
-    const float RETRO = 0.076;
+    const float RETRO = 0.076;//retroactive pay raise increase
     unsigned int uSal; //user previous salary
     float pDue, nAnu, nMon; // retroactive pay due, new Annual salary, new monthly
-    char ans;
+    char ans;//answer to yes or no repeat
     //Input
     do{
     cout<<"Your company has earned a 7.6% retroactive pay increase for the last 6 months!"<<endl;

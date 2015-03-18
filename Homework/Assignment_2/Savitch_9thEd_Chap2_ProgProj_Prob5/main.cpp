@@ -17,7 +17,7 @@ using namespace std;
 //Execution Begins Here!
 int main(int argc, char** argv) {
     //Declare Variables
-    unsigned short maxCap, nAtt, addAtt, extras;
+    unsigned short maxCap, nAtt, addAtt, extras;//max room capacity, number of attendees, additional guests allowed, extra guests over limit
     //Input
     cout<<"I am here to help you find if you have too many friends."<<endl;
     cout<<"What is the maximum room capacity of your destination?:"<<endl;

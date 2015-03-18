@@ -17,25 +17,25 @@ using namespace std;
 //Execution Begins Here!
 int main(int argc, char** argv) {
     //Declare Variables
-    unsigned short wtlbs,htin,ageyrs;
-    char mf;
-    unsigned char cBar=230;
-    float BMRFem,BMRMale,nCBars;
+    unsigned short wtlbs,htin,ageyrs;//weight in lbs, height in inches, age in years
+    char mf;//male or female
+    unsigned char cBar=230;//candy bar
+    float BMRFem,BMRMale,nCBars;//BMR female, BMR male, number of candy bars
     //Prompt the user for input
     cout<<"How many candy bars will it take"<<endl;
     cout<<"to maintain your weight?"<<endl;
     cout<<"All inputs are integers!!!"<<endl;
-    cout<<"Input your weight in lbs"<<endl;
+    cout<<"Input your weight in lbs:"<<endl;
     cin>>wtlbs;
-    cout<<"Input your height in inches"<<endl;
+    cout<<"Input your height in inches:"<<endl;
     cin>>htin;
-    cout<<"Input your age in yrs"<<endl;
+    cout<<"Input your age in yrs:"<<endl;
     cin>>ageyrs;
-    cout<<"Are you male or female m/f one character input"<<endl;
+    cout<<"Are you male or female? Type m for male or f for female:"<<endl;
     cin>>mf;
     //Calculations
-    BMRFem=655+4.3*wtlbs+4.7*htin-4.7*ageyrs;
-    BMRMale=66+6.3*wtlbs+12.9*htin-6.8*ageyrs;
+    BMRFem=655+4.3*wtlbs+4.7*htin-4.7*ageyrs;//BMR formula
+    BMRMale=66+6.3*wtlbs+12.9*htin-6.8*ageyrs;//BMR formula
     //         Ques       if Male        if Female
     nCBars=((mf=='m')?(BMRMale/cBar):(BMRFem/cBar));
     //Output the results

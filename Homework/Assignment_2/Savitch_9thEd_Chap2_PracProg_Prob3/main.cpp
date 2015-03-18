@@ -23,9 +23,9 @@ int main(int argc, char** argv) {
     cout<<"Please enter in your mph now:"<<endl;
     cin>>mph; //miles per hour
     //Calculate
-    tot=(60/mph);
-    min=static_cast<int>(60/mph);
-    sec=(tot-min)*60;
+    tot=(60/mph);//total minutes with remainder
+    min=static_cast<int>(60/mph);//minutes without remainder
+    sec=(tot-min)*60;//seconds 
     //Output
     cout<<"Your time is "<<min<<" minutes and "<<sec<<" seconds per mile."<<endl;
     //Exit Stage Right
