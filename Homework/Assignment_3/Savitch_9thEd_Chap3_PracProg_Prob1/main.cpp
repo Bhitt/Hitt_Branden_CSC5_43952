@@ -2,7 +2,7 @@
  * File:   main.cpp
  * Author: Branden Hitt 
  * Created on March 23, 2015, 10:08 AM
- *      Purpose: 
+ *      Purpose: Rock Paper Scissors 2 player game
  */
 //System Libraries
 #include <iostream>
@@ -17,7 +17,7 @@ using namespace std;
 //Execution Begins Here!
 int main(int argc, char** argv) {
     //Declare Variables
-    char user1, user2;
+    string user1, user2;
     
     //Input
     cout<<"How about a game of Rock, Paper, Scissors?"<<endl;
@@ -27,14 +27,15 @@ int main(int argc, char** argv) {
     cin>>user2;
     //Calculate
     //Output
-    if (user1=user2){
+    //Ignore
+    if (user1==user2){
         cout<<"Nobody wins"<<endl;
     }
     else if (user1=='R'&&user2=='P'){
         cout<<"Player 1 picked Rock, Player 2 picked Paper. Paper beats rock."<<endl;
         cout<<"Player 2 wins!"<<endl;
     }
-    else if (user1=P&&user2=R){
+    else if (user1=='P'&&user2='R){
         cout<<"Player 1 picked Paper, Player 2 picked Rock. Paper beats rock."<<endl;
         cout<<"Player 1 wins!"<<endl;
     }
