@@ -17,45 +17,78 @@ using namespace std;
 //Execution Begins Here!
 int main(int argc, char** argv) {
     //Declare Variables
-    string user1, user2;
+    char user1, user2;
     
     //Input
     cout<<"How about a game of Rock, Paper, Scissors?"<<endl;
+    cout<<"Rock beats Scissors. Scissors beat Paper. Paper beats Rock."<<endl;
     cout<<"Player 1, please type in your choice now (R,P,S):"<<endl;
     cin>>user1;
     cout<<"Player 2, please type in your choice now (R,P,S):"<<endl;
     cin>>user2;
     //Calculate
     //Output
-    //Ignore
-    if (user1==user2){
-        cout<<"Nobody wins"<<endl;
+    switch (user1){//checks for player 1's choice
+        case'r'://if player 1 picks r for rock
+        case'R'://if player 1 picks R for rock
+            switch (user2){
+                case'r'://if player 2 picks r for rock
+                case'R'://if player 2 picks R for rock
+                    cout<<"Nobody Wins. Tie Game"<<endl;
+                    break;
+                case'p'://if player 2 picks p for paper
+                case'P'://if player 2 picks P for paper
+                    cout<<"Player 2 wins! Paper beats Rock"<<endl;
+                    break;
+                case's'://if player 2 picks s for Scissors
+                case'S'://if player 2 picks s for Scissors
+                    cout<<"Player 1 wins! Rock beats Scissors"<<endl;
+                    break;
+                default://if player 2 types an invalid entry
+                    cout<<"Invalid Entry for Player 2"<<endl;
+            }
+            break;
+        case'p'://if player 1 picks p for Paper
+        case'P'://if player 1 picks P for Paper
+            switch(user2){
+                case'r'://if player 2 picks r for rock
+                case'R'://if player 2 picks R for rock
+                    cout<<"Player 1 Wins! Paper beats Rock"<<endl;
+                    break;
+                case'p'://if player 2 picks p for paper
+                case'P'://if player 2 picks P for paper
+                    cout<<"Nobody Wins. Tie Game"<<endl;
+                    break;
+                case's'://if player 2 picks s for Scissors
+                case'S'://if player 2 picks S for Scissors
+                    cout<<"Player 2 Wins! Scissors beat Paper"<<endl;
+                    break;
+                default://if player 2 types an invalid entry
+                    cout<<"Invalid Entry for Player 2"<<endl;
+            }
+            break;
+        case's'://if player 1 picks s for Scissors
+        case'S'://if player 1 picks S for Scissors
+            switch(user2){
+                case'r'://if player 2 picks r for rock
+                case'R'://if player 2 picks R for rock
+                    cout<<"Player 2 Wins! Rock beats Scissors"<<endl;
+                    break;
+                case'p'://if player 2 picks p for paper
+                case'P'://if player 2 picks P for paper
+                    cout<<"Player 1 Wins!Scissors beat Paper"<<endl;
+                    break;
+                case's'://if player 2 picks s for Scissors
+                case'S'://if player 2 picks S for Scissors
+                    cout<<"Nobody Wins. Tie Game"<<endl;
+                    break;
+                default://if player 2 types an invalid entry
+                    cout<<"Invalid Entry for Player 2"<<endl;
+            }
+            break;
+        default://if player 1 types an invalid entry
+            cout<<"Invalid Entry for Player 1"<<endl;
     }
-    else if (user1=='R'&&user2=='P'){
-        cout<<"Player 1 picked Rock, Player 2 picked Paper. Paper beats rock."<<endl;
-        cout<<"Player 2 wins!"<<endl;
-    }
-    else if (user1=='P'&&user2='R){
-        cout<<"Player 1 picked Paper, Player 2 picked Rock. Paper beats rock."<<endl;
-        cout<<"Player 1 wins!"<<endl;
-    }
-    else if (user1=R&&user2=S){
-        cout<<"Player 1 picked Rock, Player 2 picked Scissors. Rock beats Scissors."<<endl;
-        cout<<"Player 1 wins!"<<endl;
-    }
-    else if (user1=S&&user2=R){
-        cout<<"Player 1 picked Scissors, Player 2 picked Rock. Rock beats Scissors."<<endl;
-        cout<<"Player 2 wins!"<<endl;
-    }
-    else if (user1=P&&user2=S){
-        cout<<"Player 1 picked Paper, Player 2 picked Scissors. Scissors beat Paper"<<endl;
-        cout<<"Player 2 wins!"<<endl;
-    }
-    else if (user1=S&&user2=P){
-        cout<<"Player 1 picked Scissors, Player 2 picked Paper. Scissors beat Paper"<<endl;
-        cout<<"Player 1 wins!"<<endl;
-    }
-    else cout<<"Your choice wasn't Rock, Paper, or Scissors."<<endl;
-    //Exit Stage Right
     return 0;
 }
+    
