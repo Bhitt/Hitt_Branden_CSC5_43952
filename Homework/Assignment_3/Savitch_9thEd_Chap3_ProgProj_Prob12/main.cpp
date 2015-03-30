@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
                               stickVal-=u6;
                               if (stickVal<4&&stickVal>1){
                                   compWin=stickVal-1;
-                                  cout<<"The computer chose to take "<<compWin<<", leaving 1 stick left. You Lose!";
+                                  cout<<"The computer chose to take "<<compWin<<", leaving 1 stick left. You Lose!"<<endl;
                               }else if (stickVal==0){
                                   cout<<"You took the last stick. You Lose!"<<endl;
                               }else{
@@ -107,5 +107,8 @@ int main(int argc, char** argv) {
     }else{
         cout<<"You took too many sticks Cheater! You lose!"<<endl;
     } 
+    cout<<"Press Enter to end the program";
+    cin.ignore();
+    cin.get();
     return 0;
 }
