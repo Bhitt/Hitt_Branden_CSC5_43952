@@ -1,7 +1,7 @@
 /* 
  * File:   main.cpp
  * Author: Branden Hitt
- * Created on March 25, 2015, 10:10 AM
+ * Created on March 29, 2015, 10:10 AM
  *      Purpose: Solve the Riddler's Riddle
  *              Find a 4 digit number that passes the conditions
  */

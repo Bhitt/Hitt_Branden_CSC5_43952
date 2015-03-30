@@ -18,12 +18,22 @@ using namespace std;
 //Execution Begins Here!
 int main(int argc, char** argv) {
     //Declare Variables
-    short numCard,totVal=0;
+    short numCard,totVal=0,aces=0;
     char card1,card2,card3,card4,card5;
     //Prompt the user for inputs
     cout<<"How many cards do you have: (2,3,4,5)"<<endl;
     cin>>numCard;
     switch (numCard){//checks for amount of cards in hand
+        case 0:
+            cout<<"type a 4 times"<<endl;
+            cin>>card1,card2,card3,card4;
+            if(card1=='a'||card2=='a'||card3=='a'||card4=='a'){
+                aces++;
+            }else{
+                cout<<"busted"<<endl;
+            }
+            cout<<aces<<endl;
+            break;
         case 2://2 cards in hand
             //prompt user for card values
             cout<<"Please enter the card values.(2-9 or T,J,Q,K,A):"<<endl;
@@ -37,6 +47,7 @@ int main(int argc, char** argv) {
                 totVal+=10;
             }else if(card1=='a'||card1=='A'){
                 totVal+=11;
+                aces++;
             }else if(card1=='2'){
                 totVal+=2;
             }else if(card1=='3'){
@@ -62,6 +73,7 @@ int main(int argc, char** argv) {
                 totVal+=10;
             }else if(card2=='a'||card2=='A'){
                 totVal+=11;
+                aces++;
             }else if(card2=='2'){
                 totVal+=2;
             }else if(card2=='3'){
@@ -84,17 +96,16 @@ int main(int argc, char** argv) {
             if(totVal<22){//if the total score is less than 22
                 cout<<"Your total score is "<<totVal<<endl;
             }else{//if the score is 22 or more
-                if(card1=='a'||card1=='A'){//check card 1 for an ace
-                    totVal-=10;
+                if(aces>0){//check cards for an ace
+                    for(aces;aces>0&&totVal>21;--aces){//until the score is brought down below 22, use an ace to subtract 10
+                        totVal-=10;
+                    } 
                     if(totVal<22){
                         cout<<"Your total score is "<<totVal<<endl;
-                    }else if(card2=='a'||card2=='A'){
-                        totVal-=10;
-                    }else{
-                        cout<<"Busted! Your total was"<<totVal<<endl;
+                    }else if(totVal>21){
+                        cout<<"Busted! Your total was "<<totVal<<endl;
                     }
-                }else if(card2=='a'){//check card 2 for ace
-                }else{
+                }else{//no aces and over 21 so  bust
                 cout<<"Busted! Your total was "<<totVal<<endl;
                 }
             }
@@ -113,6 +124,7 @@ int main(int argc, char** argv) {
                 totVal+=10;
             }else if(card1=='a'||card1=='A'){
                 totVal+=11;
+                aces++;
             }else if(card1=='2'){
                 totVal+=2;
             }else if(card1=='3'){
@@ -138,6 +150,7 @@ int main(int argc, char** argv) {
                 totVal+=10;
             }else if(card2=='a'||card2=='A'){
                 totVal+=11;
+                aces++;
             }else if(card2=='2'){
                 totVal+=2;
             }else if(card2=='3'){
@@ -163,6 +176,7 @@ int main(int argc, char** argv) {
                 totVal+=10;
             }else if(card3=='a'||card3=='A'){
                 totVal+=11;
+                aces++;
             }else if(card3=='2'){
                 totVal+=2;
             }else if(card3=='3'){
@@ -182,10 +196,21 @@ int main(int argc, char** argv) {
             }else {
                 cout<<"Invalid input"<<endl;
             }
-            if(totVal<22){
+            if(totVal<22){//if the total score is less than 22
                 cout<<"Your total score is "<<totVal<<endl;
-            }else{
+            }else{//if the score is 22 or more
+                if(aces>0){//check cards for an ace
+                    for(aces;aces>0&&totVal>21;--aces){//until the score is brought down below 22, use an ace to subtract 10
+                        totVal-=10;
+                    } 
+                    if(totVal<22){
+                        cout<<"Your total score is "<<totVal<<endl;
+                    }else if(totVal>21){
+                        cout<<"Busted! Your total was "<<totVal<<endl;
+                    }
+                }else{//no aces and over 21 so  bust
                 cout<<"Busted! Your total was "<<totVal<<endl;
+                }
             }
             break;
         case 4://4 cards in hand
@@ -204,6 +229,7 @@ int main(int argc, char** argv) {
                 totVal+=10;
             }else if(card1=='a'||card1=='A'){
                 totVal+=11;
+                aces++;
             }else if(card1=='2'){
                 totVal+=2;
             }else if(card1=='3'){
@@ -229,6 +255,7 @@ int main(int argc, char** argv) {
                 totVal+=10;
             }else if(card2=='a'||card2=='A'){
                 totVal+=11;
+                aces++;
             }else if(card2=='2'){
                 totVal+=2;
             }else if(card2=='3'){
@@ -254,6 +281,7 @@ int main(int argc, char** argv) {
                 totVal+=10;
             }else if(card3=='a'||card3=='A'){
                 totVal+=11;
+                aces++;
             }else if(card3=='2'){
                 totVal+=2;
             }else if(card3=='3'){
@@ -279,6 +307,7 @@ int main(int argc, char** argv) {
                 totVal+=10;
             }else if(card4=='a'||card4=='A'){
                 totVal+=11;
+                aces++;
             }else if(card4=='2'){
                 totVal+=2;
             }else if(card4=='3'){
@@ -298,10 +327,21 @@ int main(int argc, char** argv) {
             }else {
                 cout<<"Invalid input"<<endl;
             }
-            if(totVal<22){
+            if(totVal<22){//if the total score is less than 22
                 cout<<"Your total score is "<<totVal<<endl;
-            }else{
+            }else{//if the score is 22 or more
+                if(aces>0){//check cards for an ace
+                    for(aces;aces>0&&totVal>21;--aces){//until the score is brought down below 22, use an ace to subtract 10
+                        totVal-=10;
+                    } 
+                    if(totVal<22){
+                        cout<<"Your total score is "<<totVal<<endl;
+                    }else if(totVal>21){
+                        cout<<"Busted! Your total was "<<totVal<<endl;
+                    }
+                }else{//no aces and over 21 so  bust
                 cout<<"Busted! Your total was "<<totVal<<endl;
+                }
             }
             break;
         case 5://5 cards in hand
@@ -322,6 +362,7 @@ int main(int argc, char** argv) {
                 totVal+=10;
             }else if(card1=='a'||card1=='A'){
                 totVal+=11;
+                aces++;
             }else if(card1=='2'){
                 totVal+=2;
             }else if(card1=='3'){
@@ -347,6 +388,7 @@ int main(int argc, char** argv) {
                 totVal+=10;
             }else if(card2=='a'||card2=='A'){
                 totVal+=11;
+                aces++;
             }else if(card2=='2'){
                 totVal+=2;
             }else if(card2=='3'){
@@ -372,6 +414,7 @@ int main(int argc, char** argv) {
                 totVal+=10;
             }else if(card3=='a'||card3=='A'){
                 totVal+=11;
+                aces++;
             }else if(card3=='2'){
                 totVal+=2;
             }else if(card3=='3'){
@@ -397,6 +440,7 @@ int main(int argc, char** argv) {
                 totVal+=10;
             }else if(card4=='a'||card4=='A'){
                 totVal+=11;
+                aces++;
             }else if(card4=='2'){
                 totVal+=2;
             }else if(card4=='3'){
@@ -422,6 +466,7 @@ int main(int argc, char** argv) {
                 totVal+=10;
             }else if(card5=='a'||card5=='A'){
                 totVal+=11;
+                aces++;
             }else if(card5=='2'){
                 totVal+=2;
             }else if(card5=='3'){
@@ -441,10 +486,21 @@ int main(int argc, char** argv) {
             }else {
                 cout<<"Invalid input"<<endl;
             }
-           if(totVal<22){
+            if(totVal<22){//if the total score is less than 22
                 cout<<"Your total score is "<<totVal<<endl;
-            }else{
+            }else{//if the score is 22 or more
+                if(aces>0){//check cards for an ace
+                    for(aces;aces>0&&totVal>21;--aces){//until the score is brought down below 22, use an ace to subtract 10
+                        totVal-=10;
+                    } 
+                    if(totVal<22){
+                        cout<<"Your total score is "<<totVal<<endl;
+                    }else if(totVal>21){
+                        cout<<"Busted! Your total was "<<totVal<<endl;
+                    }
+                }else{//no aces and over 21 so  bust
                 cout<<"Busted! Your total was "<<totVal<<endl;
+                }
             }
             break;
         default://Invalid input
