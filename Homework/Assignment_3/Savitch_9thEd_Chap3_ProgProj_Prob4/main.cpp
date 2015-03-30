@@ -24,16 +24,6 @@ int main(int argc, char** argv) {
     cout<<"How many cards do you have: (2,3,4,5)"<<endl;
     cin>>numCard;
     switch (numCard){//checks for amount of cards in hand
-        case 0:
-            cout<<"type a 4 times"<<endl;
-            cin>>card1,card2,card3,card4;
-            if(card1=='a'||card2=='a'||card3=='a'||card4=='a'){
-                aces++;
-            }else{
-                cout<<"busted"<<endl;
-            }
-            cout<<aces<<endl;
-            break;
         case 2://2 cards in hand
             //prompt user for card values
             cout<<"Please enter the card values.(2-9 or T,J,Q,K,A):"<<endl;
