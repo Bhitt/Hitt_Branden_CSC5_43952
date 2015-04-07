@@ -15,12 +15,12 @@ using namespace std;
 //Global Constants
 
 //Function Prototypes
-
+float price(int pStkNum, int pStkDen, int nShares, int pStk);
 //Execution Begins Here!
 int main(int argc, char** argv) {
     //Declare Variables
     unsigned short nShares, pStk, pStkNum, pStkDen;
-    float pStkFlt, totStkP;
+    float stkPr;
     char choice;
     //Loop on answer
     do{
@@ -33,14 +33,21 @@ int main(int argc, char** argv) {
         cin>>pStkNum;
         cout<<"Next for the fractional portion, input the denominator: "<<endl;
         cin>>pStkDen;
+        stkPr=price(pStkNum,pStkDen,nShares,pStk);
         //Output
-        //Single Share Price
-        pStkFlt=pStk+(1.0f*pStkNum/pStkDen);
-        cout<<"pStkFlt: "<<pStkFlt<<endl;
-        //Total Holdings
-        totStkP=nShares*pStkFlt;
-        cout<<"totStkP: "<<totStkP<<endl;
+        cout<<"Would you like to run this again? Y for Yes. No for No."<<endl;
+        cin>>choice;
     }while(choice=='Y'||choice=='y');
     //Exit Stage Right
     return 0;
+}
+float price(int pStkNum, int pStkDen, int nShares, int pStk){
+    //Declare
+    float pStkFlt, totStkP;
+    //Single Share Price
+        pStkFlt=pStk+(1.0f*pStkNum/pStkDen);
+        cout<<"The price of one stock is: $"<<pStkFlt<<endl;
+        //Total Holdings
+        totStkP=nShares*pStkFlt; 
+        cout<<"Your total holdings of stock is: $"<<totStkP<<endl;
 }
