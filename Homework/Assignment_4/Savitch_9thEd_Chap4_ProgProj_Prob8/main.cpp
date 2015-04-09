@@ -15,53 +15,50 @@ using namespace std;
 //Global Constants
 
 //Function Prototypes
-bool conDgt(int userT, int digit);
+bool cntDgt(int number, int digit);//checks the specific digits
+bool yCnt147(int number);//checks if the number has 1,4,7
 //Execution Begins Here!
 int main(int argc, char** argv) {
-    //Declare Variables
-    int userT;
-    //Prompt the user for inputs
-    cout<<"The keypad is broken on the oven. This causes the 1, 4, and 7 keys to be unusable."<<endl;
-    cout<<"I will find the two closest temperatures above and below the desired temperature if necessary."<<endl;
-    cout<<"Please enter in your desired temperature now (0 to 999): "<<endl;
-    cin>>userT;//user's temperature
-    //Calculate and Output
+    int temp;
+    bool cnt147;
+    cout<<"Enter the desired temperature."<<endl;
+    cin>>temp;//user's desired temp
     
-    if (userT>=0&&userT<=999){//checks for correct input within range
-        if ((hund!=1 && hund!=4 && hund !=7) && (tens!=1 && tens!=4 && tens !=7) && (ones!=1
-                && ones!=4 && ones !=7)){//checks to see if userTemp uses the 1, 4, and 7 keys
-            cout<<"Your Desired Temperature is "<<userT<<endl;
-        }else{//If a 1, 4 , or 7 is used in the desired temp
-            if(hund==1||hund==4||hund==7){//checks first digit
-                hund-1;
-                tens-1;
-                cout<<"The lower temp is "<<hund-1<<"99"<<endl;
-                cout<<"and the higher temp is "<<hund+1<<"00"<<endl;
-            }else if(tens==1||tens==4||tens==7){//checks second digit
-                cout<<"The lower temp is "<<hund<<tens-1<<"9"<<endl;
-                cout<<"and the higher temp is "<<hund<<tens+1<<"0"<<endl;
-            }else if(ones==1||ones==4||ones==7){//checks third digit
-                cout<<"The lower temp is "<<hund<<tens<<ones-1<<endl;
-                cout<<"and the higher temp is "<<hund<<tens<<ones+1<<endl;
-            }else{
-                cout<<"Invalid Entry"<<endl;
-            }
-        }
-    }else{//input outside of range
-        cout<<"Invalid Entry"<<endl;
+    int lowTemp=temp;
+    cnt147=yCnt147(lowTemp);
+    while(cnt147){
+        lowTemp--;
+        cnt147=yCnt147(lowTemp);
     }
+    int hiTemp=temp;
+    cnt147=yCnt147(hiTemp);
+    while(cnt147){
+        hiTemp++;
+        cnt147=yCnt147(hiTemp);
+    }
+    cout<<"The next closest lower temperature is "<<lowTemp<<endl;
+    cout<<"The next closest higher temperature is "<<hiTemp<<endl;
     return 0;
+}    
+
+bool cntDgt(int number, int digit){
+    int ones, tens, hund;
+    bool cntDgt;
+    
+    ones=number%10;
+    tens=(number/10)%10;
+    hund=(number/100);
+    if ((ones==digit)||(tens==digit)||hund==digit){
+        cntDgt=true;
+    }else{
+        cntDgt=false;
+    }
+    return cntDgt;
 }
-bool conDgt(int userT, int digit){
-    int hund, tens, ones;
-    hund=userT/100;//finds the hundreds value i.e. 3 for 361
-    tens=(userT%100)/10;//finds the tens value i.e. 6 for 361
-    ones=userT%10;//finds the ones value i.e. 1 for 361
-    if (hund==1 && hund==4 && hund==7){
+bool yCnt147(int number){
+    if((cntDgt(number,1))||(cntDgt(number,4))||(cntDgt(number,7))){
         return true;
-    }else if(tens==1||tens==4||tens==7){
-        return true;
-    }else {
+    }else{
         return false;
     }
 }
