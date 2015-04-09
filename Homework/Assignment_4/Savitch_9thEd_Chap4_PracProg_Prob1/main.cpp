@@ -14,33 +14,32 @@ using namespace std;
 //Global Constants
 const float CONVLTG=0.264179;//liters to gallons
 //Function Prototypes
-void mpg();//miles per gallon function
+float mpg(int a, int b);//miles per gallon function
 //Execution Begins Here!
 int main(int argc, char** argv) {
     //Declare Variables
     char choice;//to ask if you want to repeat
+    unsigned short nLit, nMiles;//number of liters used, number of miles driven
+    float result;
     //Prompt the user for inputs
     cout<<"This program will find your miles per gallon from your car."<<endl;
     do{
-        mpg();
+        cout<<"Please first enter in the number of liters of gasoline consumed:"<<endl;
+        cin>>nLit;
+        cout<<"Next enter in the amount of miles traveled:"<<endl;
+        cin>>nMiles;
+        result=mpg(nLit, nMiles);
+        cout<<"Your car traveled "<<result<<" miles per gallon"<<endl;
         cout<<"Would you like to run this program again?"<<endl;
-    cin>>choice;
-    
+        cin>>choice;
     }while(choice=='y'||choice=='Y');
     return 0;
 }
-void mpg(){
+float mpg( int a, int b){
     //declare variables for calculation
-    unsigned short nLit, nMiles;//number of liters used, number of miles driven
     float nGal, mPGal;// number of gallons after conversion, miles per gallon
-    cout<<"Please first enter in the number of liters of gasoline consumed:"<<endl;
-    cin>>nLit;
-    cout<<"Next enter in the amount of miles traveled:"<<endl;
-    cin>>nMiles;
-    nGal=nLit*CONVLTG;//formula to convert user's liters to gallons
+    nGal=a*CONVLTG;//formula to convert user's liters to gallons
     //cout<<"nGal: "<<nGal<<endl;
-    mPGal=1.0f*nMiles/nGal;//formula to find miles per gallon
-    //cout<<"mPGal: "<<mPGal<<endl;
-    //Output 
-    cout<<"Your car traveled "<<mPGal<<" miles per gallon"<<endl;
+    mPGal=1.0f*b/nGal;//formula to find miles per gallon
+    //cout<<"mPGal: "<<mPGal<<endl;  
 }
