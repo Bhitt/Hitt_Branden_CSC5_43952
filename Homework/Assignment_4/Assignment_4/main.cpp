@@ -31,6 +31,8 @@ string lyric(unsigned short num1, unsigned short num2);//ninety nine bottles
 bool cntDgt(int number, int digit);//checks the specific digits
 bool yCnt147(int number);//checks if the number has 1,4,7
 unsigned short draft(int team);// drafting function
+float max(float a, float b);//max 1
+float max(float a, float b, float c);//max 2
 //Execution Begins Here
 int main(int argc, char** argv) {
     char ans;
@@ -46,7 +48,7 @@ int main(int argc, char** argv) {
     cout<<"Type 7 to use problem 7: Fried Twinkie Dispenser"<<endl;
     cout<<"Type 8 to use problem 8: Oven Keypad with Bool Function"<<endl;
     cout<<"Type 9 to use problem 9: Draft Orders"<<endl;
-    cout<<"Type T to use problem 10: "<<endl;
+    cout<<"Type T to use problem 10: Overloaded Function"<<endl;
     //Read the choice
     char choice;
     cin>>choice;
@@ -314,7 +316,17 @@ int main(int argc, char** argv) {
             }
             case 't':
             case 'T':{
-                
+                float x,y,z,end;
+                //Prompt the user for inputs
+                cout<<"Please enter in a number:"<<endl;
+                cin>>x;
+                cout<<"Please enter in another number:"<<endl;
+                cin>>y;
+                cout<<"Please enter in a third number:"<<endl;
+                cin>>z;
+                end=max(x,y,z);
+                //Output 
+                cout<<"The largest number was "<<end<<endl;
                 break;
             }
             default:{
@@ -490,4 +502,21 @@ unsigned short draft(int a){
     }else {
         return 4;
     }
+}
+float max(float a, float b){
+    float temp=a;
+    if (b>a){
+        temp=b;
+    }
+    return temp;
+}
+float max(float a, float b, float c){
+    float temp=a;
+    if (b>a){
+        temp=b;
+    }
+    if(c>a){
+        temp=c;
+    }
+    return temp;
 }
