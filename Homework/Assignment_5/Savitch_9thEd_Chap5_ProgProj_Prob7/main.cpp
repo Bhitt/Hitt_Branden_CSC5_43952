@@ -30,6 +30,7 @@ int main(int argc, char** argv) {
     input(uMonth,uDate,uYear);
     //Call functions
     day=dayWeek(uYear,uMonth,uDate);
+    cout<<"*****************************"<<endl;
     //Output
     if(day==0){
         cout<<"The day of the week for that day is Sunday"<<endl;
@@ -80,10 +81,12 @@ short centVal(short b){
 
 short yrVal(short c){
     short twoDig,end;
-    twoDig=c-((c/10)*10);
+    twoDig=c-((c/100)*100);
     //cout<<"twoDig = "<<twoDig<<endl;
     end=twoDig/4;
+    //cout<<"end without add = "<<end<<endl;
     end+=twoDig;
+    //cout<<"end with two dig = "<<end<<endl;
     return end;
 }
 
@@ -130,6 +133,7 @@ short dayWeek(short y,short m, short d){
     mVal=monVal(m,y);
     yVal=yrVal(y);
     cVal=centVal(y);
+    //cout<<"D:"<<d<<"mval:"<<mVal<<"yval:"<<yVal<<"cval:"<<cVal<<endl;
     fin=(d+mVal+yVal+cVal)%7;
     return fin;
 }
