@@ -7,10 +7,10 @@
 
 //System Libraries
 #include <iostream>//I/O standard
-#include <ctime>
-#include <cstdlib>
-#include <iomanip>
-#include <string>
+#include <ctime>//computer time
+#include <cstdlib>//for random seed
+#include <iomanip>//formatting
+#include <string>//strings
 using namespace std;
 
 //User Libraries
@@ -23,13 +23,20 @@ void rDsplay();//hand ranking display
 void totals(short,short,short,short,string);// player totals
 void dealBtn(short &,string);//gives dealer button
 void round(short &,short &,short &,short &,string);//starts a new round of poker
+void dekCrds(short);//deck used for dealing
+void iniDeck(short [],short);//initializes and shuffles the deck
+string cardVal(short);//finds what the card is for output
 //Execution Begins Here!
 int main(int argc, char** argv) {
     //Declare Variables
+    srand(static_cast<unsigned int>(time(0)));
     char info,cPlayrs=2;
     string winner, player1;
     short p1Tot=50,p2Tot=50,p3Tot=50,p4Tot=50;
     short dButton=4;
+    const short SIZE=53;
+    short deck[SIZE]={};
+    iniDeck(deck,SIZE);
     cout<<"This is a table for $5/10 limit Texas Hold'em."<<endl;
     //Prompt for rules
     cout<<"If you would like instructions on how to play, then enter in 'I' now:"<<endl;
@@ -48,7 +55,7 @@ int main(int argc, char** argv) {
     cin.ignore();
     cout<<"*************************"<<endl;
     cout<<"Welcome to the table. Meet the other players."<<endl;
-    cout<<"To your left is Tom Dwan. Across from you is Howard Lederer. And to"<<endl;
+    cout<<"To your left is Tom Dwan, across from you is Howard Lederer, and to"<<endl;
     cout<<"your right is Phil Ivey. Good luck players."<<endl;
     do{
         //Give player totals
@@ -66,7 +73,7 @@ int main(int argc, char** argv) {
         //Bust players if needed
         cout<<"*************************"<<endl;
         cout<<"This will bust any players from further action"<<endl;
-        //Go back to new round if needed  
+        //Shuffle and go back to new round if needed  
         cout<<"*************************"<<endl;
         cout<<"This will start a new round if needed."<<endl;
         cPlayrs--;//this is for testing purposes
@@ -154,4 +161,89 @@ void round(short &a,short &b,short &c,short &d,string z){
     }
     //Unveil winning hand and totals
     //Add pot to winner
+}
+//*********************************************//
+//*             Deck of Cards                 *//
+//*********************************************//
+void dekCrds(short){
+    
+}
+//*********************************************//
+//*             Initialize Deck               *//
+//*********************************************//
+void iniDeck(short cards[],short n){
+    for(int i=0;i<=n;i++){
+        cards[i]=i;
+    }
+    //for(int i=0;i<=52;i++){
+    //    cout<<deck[i]<<endl;
+    //}
+}
+//*********************************************//
+//*             Card Values                   *//
+//*********************************************//
+string cardVal(short v){
+    string f;
+    //Spades
+    if(v==1)f="2 Spds"; 
+    if(v==2) f="3 Spds";
+    if(v==3) f="4 Spds";
+    if(v==4) f="5 Spds";
+    if(v==5) f="6 Spds";
+    if(v==6) f="7 Spds";
+    if(v==7) f="8 Spds";
+    if(v==8) f="9 Spds";
+    if(v==9) f="10 Spds";
+    if(v==10) f="Jack Spds";
+    if(v==11) f="Queen Spds";
+    if(v==12) f="King Spds";
+    if(v==13) f="Ace Spds";
+    //Hearts
+    if(v==14) f="2 Hrts";
+    if(v==15) f="3 Hrts";
+    if(v==16) f="4 Hrts";
+    if(v==17) f="5 Hrts";
+    if(v==18) f="6 Hrts";
+    if(v==19) f="7 Hrts";
+    if(v==20) f="8 Hrts";
+    if(v==21) f="9 Hrts";
+    if(v==22) f="10 Hrts";
+    if(v==23) f="Jack Hrts";
+    if(v==24) f="Queen Hrts";
+    if(v==25) f="King Hrts";
+    if(v==26) f="Ace Hrts";
+    //Clubs
+    if(v==27) f="2 Clbs";
+    if(v==28) f="3 Clbs";
+    if(v==29) f="4 Clbs";
+    if(v==30) f="5 Clbs";
+    if(v==31) f="6 Clbs";
+    if(v==32) f="7 Clbs";
+    if(v==33) f="8 Clbs";
+    if(v==34) f="9 Clbs";
+    if(v==35) f="10 Clbs";
+    if(v==36) f="Jack Clbs";
+    if(v==37) f="Queen Clbs";
+    if(v==38) f="King Clbs";
+    if(v==39) f="Ace Clbs";
+    //Diamonds
+    if(v==40) f="2 Dmds";
+    if(v==41) f="3 Dmds";
+    if(v==42) f="4 Dmds";
+    if(v==43) f="5 Dmds";
+    if(v==44) f="6 Dmds";
+    if(v==45) f="7 Dmds";
+    if(v==46) f="8 Dmds";
+    if(v==47) f="9 Dmds";
+    if(v==48) f="10 Dmds";
+    if(v==49) f="Jack Dmds";
+    if(v==50) f="Queen Dmds";
+    if(v==51) f="King Dmds";
+    if(v==52) f="Ace Dmds";
+    return f;
+    //for(int i=0;i<5;i++){
+    //short q=rand()%52+1;
+    //string p=cardVal(q);
+    //cout<<p<<endl;
+    //}
 }
