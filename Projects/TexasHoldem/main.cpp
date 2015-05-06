@@ -22,9 +22,12 @@ void rules();//instructions on how to play
 void rDsplay();//hand ranking display
 void totals(short,short,short,short,string);// player totals
 void dealBtn(short &,string);//gives dealer button
-void round(short &,short &,short &,short &,string);//starts a new round of poker
-void dekCrds(short);//deck used for dealing
 void iniDeck(short [],short);//initializes and shuffles the deck
+void round(short &,short &,short &,short &,string ,short [],short);//starts a new round of poker
+void deal2(short &, short &, short [], short);//deal 2 cards
+void deal3(short &,short &,short &,short [],short);// deal 3 cards
+void deal1(short &,short [],short);//deal 1 card
+short dekCrds(short []);//deck used for dealing
 string cardVal(short);//finds what the card is for output
 //Execution Begins Here!
 int main(int argc, char** argv) {
@@ -66,7 +69,7 @@ int main(int argc, char** argv) {
         dealBtn(dButton,player1);
         //Start new round
         cout<<"*************************"<<endl;
-        round(p1Tot,p2Tot,p3Tot,p4Tot,player1);
+        round(p1Tot,p2Tot,p3Tot,p4Tot,player1,deck[]);
         //Adjust totals
         cout<<"*************************"<<endl;
         cout<<"This will adjust totals"<<endl;
@@ -137,16 +140,31 @@ void dealBtn(short &a, string b){
     if(a==4) cout<<"Phil Ivey has the dealer button"<<endl;
 }
 //*********************************************//
+//*             Initialize Deck               *//
+//*********************************************//
+void iniDeck(short cards[],short n){
+    for(int i=0;i<=n;i++){
+        cards[i]=i;
+    }
+    //for(int i=0;i<=52;i++){
+    //    cout<<deck[i]<<endl;
+    //}
+}
+//*********************************************//
 //*                New round                  *//
 //*********************************************//
-void round(short &a,short &b,short &c,short &d,string z){
+void round(short &a,short &b,short &c,short &d,string z,short deck[],short size){
     char contin='Y';
+    short r1=0,r2=0,r3=0;//river card 1,2,3
     cout<<"You:$"<<a<<" | Tom:$"<<b<<" | Howard:$"<<c<<" | Phil:$"<<d<<endl;
     //Deal individual hands
+    
     //Round of betting
     if(contin=='Y'){
         cout<<"You:$"<<a<<" | Tom:$"<<b<<" | Howard:$"<<c<<" | Phil:$"<<d<<endl;
         //Deal flop
+        deal3(r1,r2,r3,deck[size]);
+        cout<<"Table Cards: "<<cardVal(r1)<<" "<<cardVal(r2)<<" "<<cardVal(r3); 
         //Round of betting
         if(contin=='Y'){
             cout<<"You:$"<<a<<" | Tom:$"<<b<<" | Howard:$"<<c<<" | Phil:$"<<d<<endl;
@@ -165,19 +183,40 @@ void round(short &a,short &b,short &c,short &d,string z){
 //*********************************************//
 //*             Deck of Cards                 *//
 //*********************************************//
-void dekCrds(short){
-    
+short dekCrds(short deck[]){
+    char repeat;
+    short card;
+    do{
+    card=rand()%52+1;
+    if(deck[card]==0){
+       repeat='Y'; 
+    }else{
+        repeat='N';
+    }
+    }while(repeat=='Y');
+    deck[card]=0;
+    return card;
 }
 //*********************************************//
-//*             Initialize Deck               *//
+//*               Deal 2                      *//
 //*********************************************//
-void iniDeck(short cards[],short n){
-    for(int i=0;i<=n;i++){
-        cards[i]=i;
-    }
-    //for(int i=0;i<=52;i++){
-    //    cout<<deck[i]<<endl;
-    //}
+void deal2(short &c1,short &c2,short deck[],short size){
+    c1=dekCrds(deck[size]);
+    c2=dekCrds(deck[size]);
+}
+//*********************************************//
+//*               Deal 3                      *//
+//*********************************************//
+void deal3(short &c1,short &c2,short &c3,short deck[],short size){
+    c1=dekCrds(deck[size]);
+    c2=dekCrds(deck[size]);
+    c3=dekCrds(deck[size]);
+}
+//*********************************************//
+//*               Deal 1                      *//
+//*********************************************//
+void deal1(short &c1,short deck[],short size){
+    c1=dekCrds(deck[size]);
 }
 //*********************************************//
 //*             Card Values                   *//
@@ -241,9 +280,4 @@ string cardVal(short v){
     if(v==51) f="King Dmds";
     if(v==52) f="Ace Dmds";
     return f;
-    //for(int i=0;i<5;i++){
-    //short q=rand()%52+1;
-    //string p=cardVal(q);
-    //cout<<p<<endl;
-    //}
 }
