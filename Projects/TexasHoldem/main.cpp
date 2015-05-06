@@ -153,7 +153,7 @@ void iniDeck(short cards[],short n){
 //*********************************************//
 //*                New round                  *//
 //*********************************************//
-void round(short &a,short &b,short &c,short &d,string z,short deck[],short size){
+void round(short &a,short &b,short &c,short &d,string z,short a[],short size){
     char contin='Y';
     short r1=0,r2=0,r3=0;//river card 1,2,3
     cout<<"You:$"<<a<<" | Tom:$"<<b<<" | Howard:$"<<c<<" | Phil:$"<<d<<endl;
@@ -163,7 +163,7 @@ void round(short &a,short &b,short &c,short &d,string z,short deck[],short size)
     if(contin=='Y'){
         cout<<"You:$"<<a<<" | Tom:$"<<b<<" | Howard:$"<<c<<" | Phil:$"<<d<<endl;
         //Deal flop
-        deal3(r1,r2,r3,deck[size]);
+        deal3(r1,r2,r3,a[]);
         cout<<"Table Cards: "<<cardVal(r1)<<" "<<cardVal(r2)<<" "<<cardVal(r3); 
         //Round of betting
         if(contin=='Y'){
@@ -181,42 +181,42 @@ void round(short &a,short &b,short &c,short &d,string z,short deck[],short size)
     //Add pot to winner
 }
 //*********************************************//
+//*               Deal 2                      *//
+//*********************************************//
+void deal2(short &c1,short &c2,short b[],short size){
+    c1=dekCrds(b[]);
+    c2=dekCrds(b[]);
+}
+//*********************************************//
+//*               Deal 3                      *//
+//*********************************************//
+void deal3(short &c1,short &c2,short &c3,short b[],short size){
+    c1=dekCrds(b[]);
+    c2=dekCrds(b[]);
+    c3=dekCrds(b[]);
+}
+//*********************************************//
+//*               Deal 1                      *//
+//*********************************************//
+void deal1(short &c1,short b[],short size){
+    c1=dekCrds(b[]);
+}
+//*********************************************//
 //*             Deck of Cards                 *//
 //*********************************************//
-short dekCrds(short deck[]){
+short dekCrds(short c[]){
     char repeat;
     short card;
     do{
     card=rand()%52+1;
-    if(deck[card]==0){
+    if(c[card]==0){
        repeat='Y'; 
     }else{
         repeat='N';
     }
     }while(repeat=='Y');
-    deck[card]=0;
+    c[card]=0;
     return card;
-}
-//*********************************************//
-//*               Deal 2                      *//
-//*********************************************//
-void deal2(short &c1,short &c2,short deck[],short size){
-    c1=dekCrds(deck[size]);
-    c2=dekCrds(deck[size]);
-}
-//*********************************************//
-//*               Deal 3                      *//
-//*********************************************//
-void deal3(short &c1,short &c2,short &c3,short deck[],short size){
-    c1=dekCrds(deck[size]);
-    c2=dekCrds(deck[size]);
-    c3=dekCrds(deck[size]);
-}
-//*********************************************//
-//*               Deal 1                      *//
-//*********************************************//
-void deal1(short &c1,short deck[],short size){
-    c1=dekCrds(deck[size]);
 }
 //*********************************************//
 //*             Card Values                   *//
