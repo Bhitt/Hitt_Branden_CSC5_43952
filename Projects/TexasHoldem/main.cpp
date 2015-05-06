@@ -23,11 +23,8 @@ void rDsplay();//hand ranking display
 void totals(short,short,short,short,string);// player totals
 void dealBtn(short &,string);//gives dealer button
 void iniDeck(short [],short);//initializes and shuffles the deck
-void round(short &,short &,short &,short &,string ,short [],short);//starts a new round of poker
-void deal2(short &, short &, short [], short);//deal 2 cards
-void deal3(short &,short &,short &,short [],short);// deal 3 cards
-void deal1(short &,short [],short);//deal 1 card
-short dekCrds(short []);//deck used for dealing
+void round(short &,short &,short &,short &,string ,short []);//starts a new round of poker
+void deal1(short &,short []);//deal 1 card
 string cardVal(short);//finds what the card is for output
 //Execution Begins Here!
 int main(int argc, char** argv) {
@@ -69,7 +66,7 @@ int main(int argc, char** argv) {
         dealBtn(dButton,player1);
         //Start new round
         cout<<"*************************"<<endl;
-        round(p1Tot,p2Tot,p3Tot,p4Tot,player1,deck[]);
+        round(p1Tot,p2Tot,p3Tot,p4Tot,player1,deck);
         //Adjust totals
         cout<<"*************************"<<endl;
         cout<<"This will adjust totals"<<endl;
@@ -153,9 +150,10 @@ void iniDeck(short cards[],short n){
 //*********************************************//
 //*                New round                  *//
 //*********************************************//
-void round(short &a,short &b,short &c,short &d,string z,short a[],short size){
+void round(short &a,short &b,short &c,short &d,string z,short x[]){
     char contin='Y';
-    short r1=0,r2=0,r3=0;//river card 1,2,3
+    short f1=0,f2=0,f3=0;//flop card 1,2,3
+    short t1,r1;//turn and river cards
     cout<<"You:$"<<a<<" | Tom:$"<<b<<" | Howard:$"<<c<<" | Phil:$"<<d<<endl;
     //Deal individual hands
     
@@ -163,16 +161,24 @@ void round(short &a,short &b,short &c,short &d,string z,short a[],short size){
     if(contin=='Y'){
         cout<<"You:$"<<a<<" | Tom:$"<<b<<" | Howard:$"<<c<<" | Phil:$"<<d<<endl;
         //Deal flop
-        deal3(r1,r2,r3,a[]);
-        cout<<"Table Cards: "<<cardVal(r1)<<" "<<cardVal(r2)<<" "<<cardVal(r3); 
+        deal1(f1,x);
+        deal1(f2,x);
+        deal1(f3,x);
+        cout<<"Table Cards: "<<cardVal(f1)<<"|"<<cardVal(f2)<<"|"<<cardVal(f3)<<endl; 
         //Round of betting
         if(contin=='Y'){
             cout<<"You:$"<<a<<" | Tom:$"<<b<<" | Howard:$"<<c<<" | Phil:$"<<d<<endl;
             //Deal turn
+            deal1(t1,x);
+            cout<<"Table Cards: "<<cardVal(f1)<<"|"<<cardVal(f2)<<"|"
+                    <<cardVal(f3)<<"|"<<cardVal(t1)<<endl;
             //Round of betting
             if(contin=='Y'){
                 cout<<"You:$"<<a<<" | Tom:$"<<b<<" | Howard:$"<<c<<" | Phil:$"<<d<<endl;
                 //Deal River
+                deal1(r1,x);
+                cout<<"Table Cards: "<<cardVal(f1)<<"|"<<cardVal(f2)<<"|"
+                    <<cardVal(f3)<<"|"<<cardVal(t1)<<"|"<<cardVal(r1)<<endl;
                 //Round of betting
             }
         }
@@ -181,42 +187,21 @@ void round(short &a,short &b,short &c,short &d,string z,short a[],short size){
     //Add pot to winner
 }
 //*********************************************//
-//*               Deal 2                      *//
-//*********************************************//
-void deal2(short &c1,short &c2,short b[],short size){
-    c1=dekCrds(b[]);
-    c2=dekCrds(b[]);
-}
-//*********************************************//
-//*               Deal 3                      *//
-//*********************************************//
-void deal3(short &c1,short &c2,short &c3,short b[],short size){
-    c1=dekCrds(b[]);
-    c2=dekCrds(b[]);
-    c3=dekCrds(b[]);
-}
-//*********************************************//
 //*               Deal 1                      *//
 //*********************************************//
-void deal1(short &c1,short b[],short size){
-    c1=dekCrds(b[]);
-}
-//*********************************************//
-//*             Deck of Cards                 *//
-//*********************************************//
-short dekCrds(short c[]){
+void deal1(short &c1,short y[]){
     char repeat;
     short card;
     do{
     card=rand()%52+1;
-    if(c[card]==0){
+    if(y[card]==0){
        repeat='Y'; 
     }else{
         repeat='N';
     }
     }while(repeat=='Y');
-    c[card]=0;
-    return card;
+    y[card]=0;
+    c1=card;
 }
 //*********************************************//
 //*             Card Values                   *//
@@ -224,60 +209,60 @@ short dekCrds(short c[]){
 string cardVal(short v){
     string f;
     //Spades
-    if(v==1)f="2 Spds"; 
-    if(v==2) f="3 Spds";
-    if(v==3) f="4 Spds";
-    if(v==4) f="5 Spds";
-    if(v==5) f="6 Spds";
-    if(v==6) f="7 Spds";
-    if(v==7) f="8 Spds";
-    if(v==8) f="9 Spds";
-    if(v==9) f="10 Spds";
-    if(v==10) f="Jack Spds";
-    if(v==11) f="Queen Spds";
-    if(v==12) f="King Spds";
-    if(v==13) f="Ace Spds";
+    if(v==1)f="2 Spades"; 
+    if(v==2) f="3 Spades";
+    if(v==3) f="4 Spades";
+    if(v==4) f="5 Spades";
+    if(v==5) f="6 Spades";
+    if(v==6) f="7 Spades";
+    if(v==7) f="8 Spades";
+    if(v==8) f="9 Spades";
+    if(v==9) f="10 Spades";
+    if(v==10) f="Jack Spades";
+    if(v==11) f="Queen Spades";
+    if(v==12) f="King Spades";
+    if(v==13) f="Ace Spades";
     //Hearts
-    if(v==14) f="2 Hrts";
-    if(v==15) f="3 Hrts";
-    if(v==16) f="4 Hrts";
-    if(v==17) f="5 Hrts";
-    if(v==18) f="6 Hrts";
-    if(v==19) f="7 Hrts";
-    if(v==20) f="8 Hrts";
-    if(v==21) f="9 Hrts";
-    if(v==22) f="10 Hrts";
-    if(v==23) f="Jack Hrts";
-    if(v==24) f="Queen Hrts";
-    if(v==25) f="King Hrts";
-    if(v==26) f="Ace Hrts";
+    if(v==14) f="2 Hearts";
+    if(v==15) f="3 Hearts";
+    if(v==16) f="4 Hearts";
+    if(v==17) f="5 Hearts";
+    if(v==18) f="6 Hearts";
+    if(v==19) f="7 Hearts";
+    if(v==20) f="8 Hearts";
+    if(v==21) f="9 Hearts";
+    if(v==22) f="10 Hearts";
+    if(v==23) f="Jack Hearts";
+    if(v==24) f="Queen Hearts";
+    if(v==25) f="King Hearts";
+    if(v==26) f="Ace Hearts";
     //Clubs
-    if(v==27) f="2 Clbs";
-    if(v==28) f="3 Clbs";
-    if(v==29) f="4 Clbs";
-    if(v==30) f="5 Clbs";
-    if(v==31) f="6 Clbs";
-    if(v==32) f="7 Clbs";
-    if(v==33) f="8 Clbs";
-    if(v==34) f="9 Clbs";
-    if(v==35) f="10 Clbs";
-    if(v==36) f="Jack Clbs";
-    if(v==37) f="Queen Clbs";
-    if(v==38) f="King Clbs";
-    if(v==39) f="Ace Clbs";
+    if(v==27) f="2 Clubs";
+    if(v==28) f="3 Clubs";
+    if(v==29) f="4 Clubs";
+    if(v==30) f="5 Clubs";
+    if(v==31) f="6 Clubs";
+    if(v==32) f="7 Clubs";
+    if(v==33) f="8 Clubs";
+    if(v==34) f="9 Clubs";
+    if(v==35) f="10 Clubs";
+    if(v==36) f="Jack Clubs";
+    if(v==37) f="Queen Clubs";
+    if(v==38) f="King Clubs";
+    if(v==39) f="Ace Clubs";
     //Diamonds
-    if(v==40) f="2 Dmds";
-    if(v==41) f="3 Dmds";
-    if(v==42) f="4 Dmds";
-    if(v==43) f="5 Dmds";
-    if(v==44) f="6 Dmds";
-    if(v==45) f="7 Dmds";
-    if(v==46) f="8 Dmds";
-    if(v==47) f="9 Dmds";
-    if(v==48) f="10 Dmds";
-    if(v==49) f="Jack Dmds";
-    if(v==50) f="Queen Dmds";
-    if(v==51) f="King Dmds";
-    if(v==52) f="Ace Dmds";
+    if(v==40) f="2 Diamonds";
+    if(v==41) f="3 Diamonds";
+    if(v==42) f="4 Diamonds";
+    if(v==43) f="5 Diamonds";
+    if(v==44) f="6 Diamonds";
+    if(v==45) f="7 Diamonds";
+    if(v==46) f="8 Diamonds";
+    if(v==47) f="9 Diamonds";
+    if(v==48) f="10 Diamonds";
+    if(v==49) f="Jack Diamonds";
+    if(v==50) f="Queen Diamonds";
+    if(v==51) f="King Diamonds";
+    if(v==52) f="Ace Diamonds";
     return f;
 }
