@@ -20,12 +20,17 @@ using namespace std;
 //Function Prototypes
 void rules();//instructions on how to play
 void rDsplay();//hand ranking display
+void totals(short,short,short,short,string);// player totals
+void dealBtn(short &,string);//gives dealer button
 void iniDeck(short [],short);//initializes and shuffles the deck
-void round(short &,short &,short &,short &,string ,short []);//starts a new round of poker
+void round(short &,short &,short &,short &,string ,short [],short);//starts a new round of poker
 void deal1(short &,short []);//deal 1 card
 short ranking(short ,short ,short ,short ,short,short &);//gives hand value
 string aiRank(short); //finds ranking of computer hand
 string cardVal(short);//finds what the card is for output
+void allBet(short &,short &,short &,short &,string,short,short);//function to start betting
+short compBet(short,short);//betting function for computer players
+short playBet(short ,short );//betting function for player
 void hiCard(short &,short &,short &,short &,short &);//sort for high card
 short winHand(short,short,short,short,short,short,short,short);//find winning hand
 string winner(string,short);//find winner
@@ -33,13 +38,14 @@ string winner(string,short);//find winner
 int main(int argc, char** argv) {
     //Declare Variables
     srand(static_cast<unsigned int>(time(0)));
-    char info,repeat;//input for info query, and repeat query
-    short p1Rw=0,p2Rw=0,p3Rw=0,p4Rw=0;//total wins for each player
-    string winner, player1;//overall winner and player name input
-    const short SIZE=53;//size of the deck
-    short deck[SIZE]={};//declare array with zeros
-    iniDeck(deck,SIZE);//fill array with card values (1-52)
-    cout<<"This is a table for Straight Poker."<<endl;
+    char info,cPlayrs=2;
+    string winner, player1,garbage;
+    short p1Tot=50,p2Tot=50,p3Tot=50,p4Tot=50;
+    short dButton=rand()%4+1;
+    const short SIZE=53;
+    short deck[SIZE]={};
+    iniDeck(deck,SIZE);
+    cout<<"This is a table for $5/10 limit Straight Poker."<<endl;
     //Prompt for rules
     cout<<"If you would like instructions on how to play, then enter in 'I' now:"<<endl;
     cout<<"otherwise, enter in 'N'"<<endl;
@@ -51,36 +57,40 @@ int main(int argc, char** argv) {
     cin>>player1;
     cout<<"*************************"<<endl;
     cout<<"Hello, "<<player1<<"! Welcome to the table."<<endl;
-    cout<<"Please hit enter to begin"<<endl;
+    cout<<"The Buy-In for this table is $50"<<endl;
+    cout<<"Please hit enter to buy your chips and begin"<<endl;
     cin.get();
     cin.ignore();
     cout<<"*************************"<<endl;
-    cout<<"Now that you are seated, why don't you meet the other players."<<endl;
+    cout<<"Welcome to the table. Meet the other players."<<endl;
     cout<<"To your left is Tom Dwan, across from you is Howard Lederer, and to"<<endl;
     cout<<"your right is Phil Ivey. Good luck players."<<endl;
-    cout<<"Please hit enter to continue"<<endl;
-    cin.get();
-    cin.ignore();
     do{
-        //Start new round
-        round(p1Rw,p1Rw,p1Rw,p1Rw,player1,deck);
-        //Shuffle and go back to new round if needed
-        iniDeck(deck,SIZE);
+        //Give player totals
         cout<<"*************************"<<endl;
-        cout<<"Would you like to play another hand?"<<endl;
-        cout<<"Enter in Y for yes or N for no:"<<endl;
-        cin>>repeat;
-    }while(repeat=='Y'||repeat=='y');
+        totals(p1Tot,p2Tot,p3Tot,p4Tot,player1);
+        //State dealer button location
+        cout<<"*************************"<<endl;
+        dealBtn(dButton,player1);
+        //Start new round
+        cout<<"*************************"<<endl;
+        round(p1Tot,p2Tot,p3Tot,p4Tot,player1,deck,dButton);
+        //Adjust totals
+        cout<<"*************************"<<endl;
+        cout<<"This will adjust totals"<<endl;
+        //Bust players if needed
+        cout<<"*************************"<<endl;
+        cout<<"This will bust any players from further action"<<endl;
+        //Shuffle and go back to new round if needed  
+        cout<<"*************************"<<endl;
+        cout<<"This will start a new round if needed."<<endl;
+        cPlayrs--;//this is for testing purposes
+    }while(cPlayrs>1);
     //Congratulate Winner
     cout<<"*************************"<<endl;
-    winner=player1;
-    short highRW=p1Rw;
-    if(p2Rw>highRW) winner="Tom Dwan";
-    if(p3Rw>highRW) winner="Howard Lederer";
-    if(p4Rw>highRW) winner="Phil Ivey";
     cout<<"Congrats to "<<winner<<" for being the table's big winner."<<endl;
-    cout<<winner<<" won "<<highRW<<" rounds of Poker."<<endl;
-    cout<<"Thank you for playing"<<endl;
+    cout<<"The grand total of winnings is $200"<<endl;
+    cout<<"Thanks for playing"<<endl;
     //Exit Stage Right!
     return 0;
 }
@@ -122,6 +132,19 @@ void totals(short a,short b,short c,short d, string plyr1){
     }
 }
 //*********************************************//
+//*              Dealer Button                *//
+//*********************************************//
+void dealBtn(short &a, string b){
+    //Shift button to the left
+    if(a>=4) a=1;
+    else a++;
+    //Output the new dealer
+    if(a==1) cout<<b<<" has the dealer button"<<endl;
+    if(a==2) cout<<"Tom Dwan has the dealer button"<<endl;
+    if(a==3) cout<<"Howard Lederer has the dealer button"<<endl;
+    if(a==4) cout<<"Phil Ivey has the dealer button"<<endl;
+}
+//*********************************************//
 //*             Initialize Deck               *//
 //*********************************************//
 void iniDeck(short cards[],short n){
@@ -132,7 +155,7 @@ void iniDeck(short cards[],short n){
 //*********************************************//
 //*                New round                  *//
 //*********************************************//
-void round(short &a,short &b,short &c,short &d,string z,short x[]){
+void round(short &a,short &b,short &c,short &d,string z,short x[],short button){
     //Declare variables
     short c1=0,c2=0,c3=0,c4=0,c5=0;//player cards
     short usrHand,ai1Hand,ai2Hand,ai3Hand;//hand values
@@ -140,9 +163,16 @@ void round(short &a,short &b,short &c,short &d,string z,short x[]){
     short ai2c1=0,ai2c2=0,ai2c3=0,ai2c4=0,ai2c5=0;//computer 2 hand
     short ai3c1=0,ai3c2=0,ai3c3=0,ai3c4=0,ai3c5=0;//computer 3 hand
     short hc=0,ai1hc=0,ai2hc=0,ai3hc=0;//high card for tie hands
-    short hc2=0,ai1hc2=0,ai2hc2=0,ai3hc2=0;//second high card for tie hands
+    short frstBet=button+1;//first person to bet
+    short pot=0;//pot total - starts at zero every round
     short winNum;//player number who has top hand
-    string ai1R,ai2R,ai3R,plR; //quick string for hand ranking
+    string ai1R,ai2R,ai3R,plR,garbage;
+    //ante up
+    cout<<"-$5 from everyone for the ante:"<<endl;
+    a-=5,b-=5,c-=5,d-=5;
+    pot+=20;
+    cout<<"You:$"<<a<<" | Tom:$"<<b<<" | Howard:$"<<c<<" | Phil:$"<<d<<endl;
+    cout<<"Pot: "<<pot<<endl;
     cout<<"*************************"<<endl;
     //Deal individual hands
     deal1(c1,x);
@@ -196,9 +226,9 @@ void round(short &a,short &b,short &c,short &d,string z,short x[]){
     cout<<"Please hit enter to continue:"<<endl;
     cin.get();
     cin.ignore();
+    //allBet();
     //Unveil all hands
     cout<<"*************************"<<endl;
-    cout<<"               All Player Hands     "<<endl;
     cout<<"Your Hand: "<<cardVal(c1)<<"|"<<cardVal(c2)<<"|"<<cardVal(c3)<<
                 "|"<<cardVal(c4)<<"|"<<cardVal(c5)<<"  ("<<plR<<")"<<endl;
     cout<<"Tom's Hand: "<<cardVal(ai1c1)<<"|"<<cardVal(ai1c2)<<"|"<<cardVal(ai1c3)<<
@@ -208,21 +238,11 @@ void round(short &a,short &b,short &c,short &d,string z,short x[]){
     cout<<"Phil's Hand: "<<cardVal(ai3c1)<<"|"<<cardVal(ai3c2)<<"|"<<cardVal(ai3c3)<<
                 "|"<<cardVal(ai3c4)<<"|"<<cardVal(ai3c5)<<"  ("<<ai3R<<")"<<endl;
     //Unveil winning hand
-    cout<<"Please hit enter to continue:"<<endl;
-    cin.get();
-    cin.ignore();
     cout<<"*************************"<<endl;
     winNum=winHand(usrHand,ai1Hand,ai2Hand,ai3Hand,hc,ai1hc,ai2hc,ai3hc);
     string rndWinr=winner(z,winNum);
-    cout<<rndWinr<<" has the winning hand. "<<endl;
-    cout<<"Please hit enter to continue:"<<endl;
-    cin.get();
-    cin.ignore();
-    cout<<"*************************"<<endl;
-    if(winNum==1) a+=1;//player 1 win
-    if(winNum==2) b+=1;//player 2 win
-    if(winNum==3) c+=1;//player 3 win
-    if(winNum==4) d+=1;//player 4 win
+    cout<<rndWinr<<" has the winning hand. "<<rndWinr<<" takes the pot:$"<<pot<<endl;
+    //Add pot to winner
 }
 //*********************************************//
 //*               Deal 1                      *//
@@ -387,6 +407,86 @@ string aiRank(short a){
     if(a==8)state="Four of a Kind";
     if(a==9)state="Straight Flush";
     return state;
+}
+//*********************************************//
+//*               All Bet                     *//
+//*********************************************//
+void allBet(short &a,short &b,short &c,short &d,string z,short fBet,short pot){
+    //declare stuff
+    string w="Tom",t="Howard",f="Phil",gun,garbage;
+    short usrBet,curBet,ttlBets=0;
+    char usrFold;
+    //find the first person to bet
+    if(fBet==5) fBet=1;
+    if(fBet==1) gun=z;
+    if(fBet==2) gun=w;
+    if(fBet==3) gun=t;
+    if(fBet==4) gun=f;
+    curBet=fBet;
+    //Round of betting
+    cout<<"Betting starts with "<<gun<<endl;
+    cout<<"Press Enter Now"<<endl;
+    cin.get();//ignore input
+    cin.ignore();
+    cout<<"*************************"<<endl;
+    do{
+    if(curBet==1){
+        //call player bet
+        //increment current bet
+        curBet++;
+    }
+    if(curBet==2){
+        //call comp bet
+        //increment current bet
+        curBet++;
+    }
+    if(curBet==3){
+        //call comp bet
+        //increment current bet
+        curBet++;
+    }
+    if(curBet==4){
+        //call comp bet
+        //increment current bet
+        curBet==1;
+    }
+    }while(ttlBets<4);
+}
+//*********************************************//
+//*             Computer Bet                  *//
+//*********************************************//
+short compBet(short a,short b){
+    //random betting option
+    short choice=rand()%4+1;
+    //folding option
+    if(choice==4) return 0;
+    //check total money for all-in
+    if(choice==1&&b>=a) return 5;
+    if(choice==2&&(b+5>=a)) return 5;
+    if(choice==3&&(b+10>=a)) return 5;
+    //regular bet
+    if(choice==1) return 1;
+    if(choice==2) return 2;
+    if(choice==3) return 3;
+}
+//*********************************************//
+//*               Player Bet                  *//
+//*********************************************//
+short playBet(short &plyTtl,short &curBet){
+    short choice;
+    //prompt the user
+    cout<<"Now it is your turn to bet. Please enter in 1 to check/call, 2 "<<
+            "to make the Minimum bet, 3 to Max bet, or 4 to Fold."<<endl;
+    //folding option
+    if(choice==4) return 0;
+    //check total money for all-in
+    if(choice==1&&curBet>=plyTtl) return 5;
+    if(choice==2&&(curBet+5>=plyTtl)) return 5;
+    if(choice==3&&(curBet+10>=plyTtl)) return 5;
+    //regular bet
+    if(choice==1) return 1;
+    if(choice==2) return 2;
+    if(choice==3) return 3;
 }
 //*********************************************//
 //*               High Card/Sort              *//
