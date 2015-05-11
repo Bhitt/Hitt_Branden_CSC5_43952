@@ -26,6 +26,7 @@ void iniDeck(short [],short);//initializes and shuffles the deck
 void round(short &,short &,short &,short &,string ,short [],short);//starts a new round of poker
 void deal1(short &,short []);//deal 1 card
 short ranking(short ,short ,short ,short ,short,short &);//gives hand value
+string aiRank(short); //finds ranking of computer hand
 string cardVal(short);//finds what the card is for output
 void allBet(short &,short &,short &,short &,string,short,short);//function to start betting
 short compBet(short,short);//betting function for computer players
@@ -38,7 +39,7 @@ int main(int argc, char** argv) {
     //Declare Variables
     srand(static_cast<unsigned int>(time(0)));
     char info,cPlayrs=2;
-    string winner, player1;
+    string winner, player1,garbage;
     short p1Tot=50,p2Tot=50,p3Tot=50,p4Tot=50;
     short dButton=rand()%4+1;
     const short SIZE=53;
@@ -161,9 +162,11 @@ void round(short &a,short &b,short &c,short &d,string z,short x[],short button){
     short ai1c1=0,ai1c2=0,ai1c3=0,ai1c4=0,ai1c5=0;//computer 1 hand
     short ai2c1=0,ai2c2=0,ai2c3=0,ai2c4=0,ai2c5=0;//computer 2 hand
     short ai3c1=0,ai3c2=0,ai3c3=0,ai3c4=0,ai3c5=0;//computer 3 hand
-    short hc=0,ai1hc=0,ai2hc=0,ai3hc=0;
-    short frstBet=button+1;
-    short pot=0;
+    short hc=0,ai1hc=0,ai2hc=0,ai3hc=0;//high card for tie hands
+    short frstBet=button+1;//first person to bet
+    short pot=0;//pot total - starts at zero every round
+    short winNum;//player number who has top hand
+    string ai1R,ai2R,ai3R,plR,garbage;
     //ante up
     cout<<"-$5 from everyone for the ante:"<<endl;
     a-=5,b-=5,c-=5,d-=5;
@@ -202,6 +205,11 @@ void round(short &a,short &b,short &c,short &d,string z,short x[],short button){
     ai1Hand=ranking(ai1c1,ai1c2,ai1c3,ai1c4,ai1c5,ai1hc);
     ai2Hand=ranking(ai2c1,ai2c2,ai2c3,ai2c4,ai2c5,ai2hc);
     ai3Hand=ranking(ai3c1,ai3c2,ai3c3,ai3c4,ai3c5,ai3hc);
+    //set string for ai hand ranking
+    plR=aiRank(usrHand);
+    ai1R=aiRank(ai1Hand);
+    ai2R=aiRank(ai2Hand);
+    ai3R=aiRank(ai3Hand);
     //state hand value
     if(usrHand==1)cout<<"Your hand value is low with just a high card ("<<cardVal(c5)<<")."<<endl;
     if(usrHand==2)cout<<"Your hand value is low with just a pair."<<endl;
@@ -215,21 +223,25 @@ void round(short &a,short &b,short &c,short &d,string z,short x[],short button){
     //Display player hand
     cout<<"Your Hand: "<<cardVal(c1)<<"|"<<cardVal(c2)<<"|"<<cardVal(c3)<<
                 "|"<<cardVal(c4)<<"|"<<cardVal(c5)<<endl;
+    cout<<"Please hit enter to continue:"<<endl;
+    cin.get();
+    cin.ignore();
     //allBet();
     //Unveil all hands
     cout<<"*************************"<<endl;
     cout<<"Your Hand: "<<cardVal(c1)<<"|"<<cardVal(c2)<<"|"<<cardVal(c3)<<
-                "|"<<cardVal(c4)<<"|"<<cardVal(c5)<<endl;
+                "|"<<cardVal(c4)<<"|"<<cardVal(c5)<<"  ("<<plR<<")"<<endl;
     cout<<"Tom's Hand: "<<cardVal(ai1c1)<<"|"<<cardVal(ai1c2)<<"|"<<cardVal(ai1c3)<<
-                "|"<<cardVal(ai1c4)<<"|"<<cardVal(ai1c5)<<endl;
+                "|"<<cardVal(ai1c4)<<"|"<<cardVal(ai1c5)<<"  ("<<ai1R<<")"<<endl;
     cout<<"Howard's Hand: "<<cardVal(ai2c1)<<"|"<<cardVal(ai2c2)<<"|"<<cardVal(ai2c3)<<
-                "|"<<cardVal(ai2c4)<<"|"<<cardVal(ai2c5)<<endl;
+                "|"<<cardVal(ai2c4)<<"|"<<cardVal(ai2c5)<<"  ("<<ai2R<<")"<<endl;
     cout<<"Phil's Hand: "<<cardVal(ai3c1)<<"|"<<cardVal(ai3c2)<<"|"<<cardVal(ai3c3)<<
-                "|"<<cardVal(ai3c4)<<"|"<<cardVal(ai3c5)<<endl;
+                "|"<<cardVal(ai3c4)<<"|"<<cardVal(ai3c5)<<"  ("<<ai3R<<")"<<endl;
     //Unveil winning hand
     cout<<"*************************"<<endl;
-    string winner=winHand(z,usrHand,ai1Hand,ai2Hand,ai3Hand);
-    cout<<winner<<" has the winning hand. "<<winner<<" takes the pot."<<endl;
+    winNum=winHand(usrHand,ai1Hand,ai2Hand,ai3Hand,hc,ai1hc,ai2hc,ai3hc);
+    string rndWinr=winner(z,winNum);
+    cout<<rndWinr<<" has the winning hand. "<<rndWinr<<" takes the pot:$"<<pot<<endl;
     //Add pot to winner
 }
 //*********************************************//
@@ -316,7 +328,7 @@ string cardVal(short v){
 //*             Hand Ranking                  *//
 //*********************************************//
 short ranking(short a,short b,short c,short d,short e, short &hi1){
-    //high card = 1
+    //high card hand value= 1
     short value=1,temp;
     char str='N',flu='N';
     //flush = 6
@@ -368,10 +380,11 @@ short ranking(short a,short b,short c,short d,short e, short &hi1){
     if((e-d==1)&&(d-c==1)&&(c-b==1)&&(b-a==1)) value=5,str='Y',hi1=e;
     if((a==1)&&(b==2)&&(c==3)&&(d==4)&&(e==13)) value=5,str='Y',hi1=e;
     //full house = 7
-    if((c==d&&c==e&&a==b)||(a==d&&a==e&&b==c)||(a==b&&a==e&&c==d)||(a==b&&a==c&&d==e)) value=7;
-    if((b==d&&b==e&&a==c)||(a==c&&a==e&&b==d)||(a==b&&a==d&&c==e)) value=7;
-    if((b==c&&b==e&&a==d)||(a==c&&a==d&&b==e)) value=7;
-    if(b==c&&b==d&&a==e) value=7;
+    if((c==d&&c==e&&a==b)||(a==d&&a==e&&b==c)) value=7,hi1=d;
+    if((a==b&&a==e&&c==d)||(a==b&&a==c&&d==e)) value=7,hi1=a;
+    if((a==c&&a==e&&b==d)||(a==b&&a==d&&c==e)) value=7,hi1=a;
+    if((b==d&&b==e&&a==c)||(b==c&&b==d&&a==e)) value=7,hi1=b;
+    if((b==c&&b==e&&a==d)||(a==c&&a==d&&b==e)) value=7,hi1=c;
     //four of a kind = 8
     if((b==c&&d==e&&c==d)||(a==c&&d==e&&c==d)||(a==b&&d==e&&b==d)) value=8,hi1=d;
     if((a==b&&c==e&&b==c)||(a==b&&c==d&&b==c)) value=8,hi1=a;
@@ -380,12 +393,28 @@ short ranking(short a,short b,short c,short d,short e, short &hi1){
     return value;
 }
 //*********************************************//
+//*             Computer Hand                 *//
+//*********************************************//
+string aiRank(short a){
+    string state;
+    if(a==1)state="High card";
+    if(a==2)state="Pair";
+    if(a==3)state="Two Pair";
+    if(a==4)state="Three of a Kind";
+    if(a==5)state="Straight";
+    if(a==6)state="Flush";
+    if(a==7)state="Full House";
+    if(a==8)state="Four of a Kind";
+    if(a==9)state="Straight Flush";
+    return state;
+}
+//*********************************************//
 //*               All Bet                     *//
 //*********************************************//
 void allBet(short &a,short &b,short &c,short &d,string z,short fBet,short pot){
     //declare stuff
     string w="Tom",t="Howard",f="Phil",gun,garbage;
-    short usrBet,curBet=0;
+    short usrBet,curBet,ttlBets=0;
     char usrFold;
     //find the first person to bet
     if(fBet==5) fBet=1;
@@ -393,23 +422,35 @@ void allBet(short &a,short &b,short &c,short &d,string z,short fBet,short pot){
     if(fBet==2) gun=w;
     if(fBet==3) gun=t;
     if(fBet==4) gun=f;
+    curBet=fBet;
     //Round of betting
     cout<<"Betting starts with "<<gun<<endl;
     cout<<"Press Enter Now"<<endl;
-    cin>>garbage;//ignore input
+    cin.get();//ignore input
+    cin.ignore();
     cout<<"*************************"<<endl;
-    if(fBet==1){
+    do{
+    if(curBet==1){
         //call player bet
+        //increment current bet
+        curBet++;
     }
-    fBet++;
-    if(fBet==5) ;
-    
-   
-    cin>>usrBet;
-    if(usrBet==4) usrFold='Y';
-    else a-=curBet;
-    if(usrBet==2) a-=5,pot+=5;
-    if(usrBet==3) a-=10,pot+=10;
+    if(curBet==2){
+        //call comp bet
+        //increment current bet
+        curBet++;
+    }
+    if(curBet==3){
+        //call comp bet
+        //increment current bet
+        curBet++;
+    }
+    if(curBet==4){
+        //call comp bet
+        //increment current bet
+        curBet==1;
+    }
+    }while(ttlBets<4);
 }
 //*********************************************//
 //*             Computer Bet                  *//
@@ -508,26 +549,83 @@ void hiCard(short &a,short &b,short &c,short &d,short &e){
 //*               Winning Hand                *//
 //*********************************************//
 short winHand(short a,short b,short c,short d,short h1,short h2,short h3,short h4){
-    //put hands in order from weakest to strongest
-    short temp;
-    if(a>b) temp=a,a=b,b=temp;
-    if(a>c) temp=a,a=c,c=temp;
-    if(a>d) temp=a,a=d,d=temp;
-    if(b>c) temp=b,b=c,c=temp;
-    if(b>d) temp=b,b=d,d=temp;
-    if(c>d) temp=c,c=d,d=temp;
-    if(e==d){
-        if(h4>h3) winner=4;
+    //find top hand value
+    short topHand=a,pl1=0,pl2=0,pl3=0,pl4=0,win;
+    if(b>topHand) topHand=b;
+    if(c>topHand) topHand=c;
+    if(d>topHand) topHand=d;
+    //find all that have the value of the top hand
+    if(a==topHand) pl1=1;
+    if(b==topHand) pl2=1;
+    if(c==topHand) pl3=1;
+    if(d==topHand) pl4=1;
+    //compare ties for top hand
+    if((pl1==1)&&(pl2==1)){
+        if(h1>h2) win=1;
+        if(h2>h1) win=2;
     }
+    if((pl1==1)&&(pl3==1)){
+        if(h1>h3) win=1;
+        if(h3>h1) win=3;
+    }
+    if((pl1==1)&&(pl4==1)){
+        if(h1>h4) win=1;
+        if(h4>h1) win=4;
+    }
+    if((pl2==1)&&(pl3==1)){
+        if(h2>h3) win=2;
+        if(h3>h2) win=3;
+    }
+    if((pl2==1)&&(pl4==1)){
+        if(h2>h4) win=2;
+        if(h4>h2) win=4;
+    }
+    if((pl3==1)&&(pl4==1)){
+        if(h3>h4) win=3;
+        if(h4>h3) win=4;
+    }
+    if((pl1==1)&&(pl2==1)&&(pl3==1)){
+        if(h1>h2&&h1>h3) win=1;
+        if(h2>h1&&h2>h3) win=2;
+        if(h3>h1&&h3>h2) win=3;
+    }
+    if((pl1==1)&&(pl3==1)&&(pl4==1)){
+        if(h1>h4&&h1>h3) win=1;
+        if(h4>h1&&h4>h3) win=4;
+        if(h3>h1&&h3>h4) win=3;
+    }
+    if((pl1==1)&&(pl2==1)&&(pl4==1)){
+        if(h1>h2&&h1>h4) win=1;
+        if(h2>h1&&h2>h4) win=2;
+        if(h4>h1&&h4>h2) win=4;
+    }
+    if((pl3==1)&&(pl2==1)&&(pl4==1)){
+        if(h3>h2&&h3>h4) win=3;
+        if(h2>h3&&h2>h4) win=2;
+        if(h4>h3&&h4>h2) win=4;
+    }
+    if((pl1==1)&&(pl2==1)&&(pl3==1)&&(pl4==1)){
+        if(h1>h2&&h1>h3&&h1>h4) win=1;
+        if(h2>h1&&h2>h3&&h2>h4) win=2;
+        if(h3>h2&&h3>h1&&h3>h4) win=3;
+        if(h4>h2&&h4>h3&&h4>h1) win=4;
+    }
+    if((pl1==1)&&(pl2==0)&&(pl3==0)&&(pl4==0)) win=1;
+    if((pl1==0)&&(pl2==1)&&(pl3==0)&&(pl4==0)) win=2;
+    if((pl1==0)&&(pl2==0)&&(pl3==1)&&(pl4==0)) win=3;
+    if((pl1==0)&&(pl2==0)&&(pl3==0)&&(pl4==1)) win=4;
+    //return win
+    return win;
 }
 //*********************************************//
 //*            Winning Player                 *//
 //*********************************************//
 string winner(string you,short a){
     string winner; 
-    winner=you;
+    if(a==1) winner=you;
     if(a==2) winner="Tom";
     if(a==3) winner="Howard";
     if(a==4) winner="Phil";
+    if(a<1||a>4) winner="Error";
     return winner;
 }
