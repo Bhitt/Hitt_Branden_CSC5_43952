@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
     }while(repeat=='Y'||repeat=='y');
     //Congratulate Winner
     cout<<"*************************"<<endl;
-    winner=player1;
+    winner=player1+" ";
     short highRW=p1Rw;
     if(p2Rw>highRW) winner="Tom Dwan ", highRW=p2Rw;
     else if(p2Rw==highRW) winner+="& Tom Dwan ";
@@ -96,7 +96,31 @@ int main(int argc, char** argv) {
 //*             Rules Function                *//
 //*********************************************//              
 void rules(){
-    cout<<"This will be where the rules are displayed"<<endl;
+    char menu;
+    cout<<"*************************"<<endl;
+    cout<<"How to Play:"<<endl;
+    cout<<"Each player is dealt 5 random cards (or a Hand) from a standard 52-card deck."<<endl;
+    cout<<"Whoever has the best combination of cards based on rankings will win the round."<<endl;
+    cout<<"The more rare the hand, the higher the ranking will be."<<endl;
+    cout<<"The worst hand is nothing with just a High Card, and the best is a Royal Flush."<<endl;
+    cout<<"The Hand Rankings are as followed:"<<endl;
+    cout<<"0.High Card | 1.Pair | 2.Two Pair | 3.Three of a Kind | 4.Straight "<<endl;
+    cout<<"5.Flush | 6.Full House | 7.Four of a Kind | 8.Straight Flush | 9.Royal Flush"<<endl;
+    cout<<"*************************"<<endl;
+    cout<<"If you would like to view an example/explanation of a specific hand, enter in"<<endl;
+    cout<<"the corresponding number. (for example: enter in 4 to view a straight)"<<endl;
+    cout<<"Otherwise, enter in G to get started:"<<endl;
+    cout<<"*************************"<<endl;
+    cin>>menu;
+    switch(menu){
+        case'0':{
+            cout<<"High Card: This hand has nothing to rely on but a High card."<<endl;
+            cout<<"Example: 3 Diamonds | Jack Clubs | 8 Spades | 4 Hearts | 2 Spades"<<endl;
+        }
+        case'1':{
+            cout<<""<<endl;
+        }
+    }
 }
 //*********************************************//
 //*         Hand Rankings Display             *//
@@ -165,9 +189,9 @@ short round(string z,short x[]){
     ai3R=aiRank(ai3Hand);
     //state hand value
     if(usrHand==1)cout<<"Your hand value is low with just a high card ("<<cardVal(c5)<<")."<<endl;
-    if(usrHand==2)cout<<"Your hand value is low with just a pair."<<endl;
-    if(usrHand==3)cout<<"Your have two pair."<<endl;
-    if(usrHand==4)cout<<"Your have three of a kind. Not too bad."<<endl;
+    if(usrHand==2)cout<<"Your hand value is average with just a pair."<<endl;
+    if(usrHand==3)cout<<"You have two pair."<<endl;
+    if(usrHand==4)cout<<"You have three of a kind. Not too bad."<<endl;
     if(usrHand==5)cout<<"Congrats! You have a straight."<<endl;
     if(usrHand==6)cout<<"Wow! You have a Flush."<<endl;
     if(usrHand==7)cout<<"What a strong hand. You have a Full House!"<<endl;
@@ -176,7 +200,7 @@ short round(string z,short x[]){
     //Display player hand
     cout<<"Your Hand: "<<cardVal(c1)<<"|"<<cardVal(c2)<<"|"<<cardVal(c3)<<
                 "|"<<cardVal(c4)<<"|"<<cardVal(c5)<<endl;
-    cout<<"Please hit enter to continue:"<<endl;
+    cout<<"Please hit enter to see everyone's hands:"<<endl;
     cin.get();
     cin.ignore();
     //Unveil all hands
@@ -191,7 +215,7 @@ short round(string z,short x[]){
     cout<<"Phil's Hand: "<<cardVal(ai3c1)<<"|"<<cardVal(ai3c2)<<"|"<<cardVal(ai3c3)<<
                 "|"<<cardVal(ai3c4)<<"|"<<cardVal(ai3c5)<<"  ("<<ai3R<<")"<<endl;
     //Unveil winning hand
-    cout<<"Please hit enter to continue:"<<endl;
+    cout<<"Please hit enter to find the winning hand:"<<endl;
     cin.get();
     cin.ignore();
     cout<<"*************************"<<endl;
