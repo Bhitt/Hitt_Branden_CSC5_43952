@@ -11,6 +11,7 @@
 #include <cstdlib>//for random seed
 #include <iomanip>//formatting
 #include <string>//strings
+#include <fstream>//file in/out
 using namespace std;
 
 //User Libraries
@@ -96,31 +97,90 @@ int main(int argc, char** argv) {
 //*             Rules Function                *//
 //*********************************************//              
 void rules(){
-    char menu;
+    char menu,cho='N';
+    bool skip=false;
     cout<<"*************************"<<endl;
     cout<<"How to Play:"<<endl;
     cout<<"Each player is dealt 5 random cards (or a Hand) from a standard 52-card deck."<<endl;
     cout<<"Whoever has the best combination of cards based on rankings will win the round."<<endl;
     cout<<"The more rare the hand, the higher the ranking will be."<<endl;
-    cout<<"The worst hand is nothing with just a High Card, and the best is a Royal Flush."<<endl;
+    cout<<"The worst hand is nothing special with just a High Card, while the best is a Royal Flush."<<endl;
+     do{
     cout<<"The Hand Rankings are as followed:"<<endl;
     cout<<"0.High Card | 1.Pair | 2.Two Pair | 3.Three of a Kind | 4.Straight "<<endl;
     cout<<"5.Flush | 6.Full House | 7.Four of a Kind | 8.Straight Flush | 9.Royal Flush"<<endl;
     cout<<"*************************"<<endl;
-    cout<<"If you would like to view an example/explanation of a specific hand, enter in"<<endl;
+    cout<<"To view an example/explanation of a specific hand, enter in"<<endl;
     cout<<"the corresponding number. (for example: enter in 4 to view a straight)"<<endl;
-    cout<<"Otherwise, enter in G to get started:"<<endl;
+    cout<<"Otherwise, enter in S to get started:"<<endl;
     cout<<"*************************"<<endl;
     cin>>menu;
+    cout<<"*************************"<<endl;
     switch(menu){
         case'0':{
             cout<<"High Card: This hand has nothing to rely on but a High card."<<endl;
-            cout<<"Example: 3 Diamonds | Jack Clubs | 8 Spades | 4 Hearts | 2 Spades"<<endl;
+            cout<<"Ex: 3 Diamonds | Jack Clubs | 8 Spades | 4 Hearts | 2 Spades"<<endl;
+            break;
         }
         case'1':{
-            cout<<""<<endl;
+            cout<<"Pair: Two cards of the same rank."<<endl;
+            cout<<"Ex: Ace Hearts | Ace Diamonds | 8 Clubs | 4 Spades | 7 Hearts"<<endl;
+            break;
         }
+        case'2':{
+            cout<<"Two Pair: Two different pairs of cards."<<endl;
+            cout<<"Ex: 4 Spades | 4 Clubs | 3 Clubs | 3 Diamonds | Queen Clubs"<<endl;
+            break;
+        }
+        case'3':{
+            cout<<"Three of a Kind: Three cards of the same rank."<<endl;
+            cout<<"Ex: 7 Clubs | 7 Diamonds | 7 Spades | King Clubs | 3 Diamonds"<<endl;
+            break;
+        }
+        case'4':{
+            cout<<"Straight: Five cards in a sequence, but not of the same suit."<<endl;
+            cout<<"Ex: 5 Hearts | 6 Diamonds | 7 Spades | 8 Diamonds | 9 Clubs"<<endl;
+            break;
+        }
+        case'5':{
+            cout<<"Flush: Any five cards of the same suit, but not in a sequence."<<endl;
+            cout<<"Ex: 4 Spades | Jack Spades | 8 Spades | 2 Spades | 9 Spades"<<endl;
+            break;
+        }
+        case'6':{
+            cout<<"Full House: Three of a Kind and a Pair."<<endl;
+            cout<<"Ex: 10 Hearts | 10 Diamonds | 10 Spades | 9 Clubs | 9 Diamonds"<<endl;
+            break;
+        }
+        case'7':{
+            cout<<"Four of a Kind: All four cards of the same rank."<<endl;
+            cout<<"Ex: Jack Hearts | Jack Spades | Jack Diamonds | Jack Clubs | 7 Hearts"<<endl;
+            break;
+        }
+        case'8':{
+            cout<<"Straight Flush: Five cards in a sequence, all in the same suit."<<endl;
+            cout<<"Ex: 4 Spades | 5 Spades | 6 Spades | 7 Spades | 8 Spades"<<endl;
+            break;
+        }
+        case'9':{
+            cout<<"Royal Flush: 10, J, Q, K, A (all in the same suit)."<<endl;
+            cout<<"Ex: 10 Spades | Jack Spades | Queen Spades | King Spades | Ace Spades"<<endl;
+            break;
+        }
+        default:{
+            cho=='N';
+            skip=true;
+            break;
+        }    
     }
+    if(skip==false){
+    cout<<"*************************"<<endl;
+    cout<<"Would you like to view another Hand Ranking?"<<endl;
+    cout<<"Enter in Y for yes or N for no:"<<endl;
+    cin>>cho;
+    cout<<"*************************"<<endl;
+    }
+    }while(cho=='Y'||cho=='y');
 }
 //*********************************************//
 //*         Hand Rankings Display             *//
