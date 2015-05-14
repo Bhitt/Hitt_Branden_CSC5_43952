@@ -24,7 +24,7 @@ void rDsplay();//hand ranking display
 void iniDeck(short [],short);//initializes and shuffles the deck
 short round(string ,short []);//starts a new round of poker
 void deal1(short &,short []);//deal 1 card
-short ranking(short ,short ,short ,short ,short,short &,short &);//gives hand value
+short ranking(short ,short ,short ,short ,short,short &);//gives hand value
 string aiRank(short); //finds ranking of computer hand
 string cardVal(short);//finds what the card is for output
 void hiCard(short &,short &,short &,short &,short &);//sort for high card
@@ -33,13 +33,16 @@ string winner(string,short);//find round winner
 //Execution Begins Here!
 int main(int argc, char** argv) {
     //Declare Variables
+    ofstream fout;//output to file
+    fout.open("Results.Dat");
     srand(static_cast<unsigned int>(time(0)));
     char info,repeat;//input for info query, and repeat query
     short p1Rw=0,p2Rw=0,p3Rw=0,p4Rw=0;//total wins for each player
     string winner, player1;//overall winner and player name input
     const short SIZE=53;//size of the deck
     short deck[SIZE]={};//declare array with zeros
-    short rWin=0;
+    short rWin=0;//current round win
+    float perWin,totR=0;//percentage of wins for the player/ totals rounds
     iniDeck(deck,SIZE);//fill array with card values (1-52)
     cout<<"This is a table for Straight Poker."<<endl;
     //Prompt for rules
@@ -60,7 +63,7 @@ int main(int argc, char** argv) {
     cout<<"Now that you are seated, why don't you meet the other players."<<endl;
     cout<<"To your left is Tom Dwan, across from you is Howard Lederer, and to"<<endl;
     cout<<"your right is Phil Ivey. Good luck players."<<endl;
-    cout<<"Please hit enter to continue"<<endl;
+    cout<<"Please hit enter twice to continue"<<endl;
     cin.get();
     cin.ignore();
     do{
@@ -72,12 +75,13 @@ int main(int argc, char** argv) {
         if(rWin==4) p4Rw++;//player 4 win
         //Shuffle and go back to new round if needed
         iniDeck(deck,SIZE);
+        totR++;//increment the total rounds
         cout<<"*************************"<<endl;
         cout<<"Would you like to play another hand?"<<endl;
         cout<<"Enter in Y for yes or N for no:"<<endl;
-        cin>>repeat;
+        cin>>repeat;//prompt for new round
     }while(repeat=='Y'||repeat=='y');
-    //Congratulate Winner
+    //Congratulate Overall Winner
     cout<<"*************************"<<endl;
     winner=player1+" ";
     short highRW=p1Rw;
@@ -88,8 +92,18 @@ int main(int argc, char** argv) {
     if(p4Rw>highRW) winner="Phil Ivey ", highRW=p4Rw;
     else if(p4Rw==highRW) winner+="& Phil Ivey ";
     cout<<"Congrats to "<<winner<<"for being the table's big winner(s)."<<endl;
-    cout<<winner<<" won "<<highRW<<" round(s) of Poker."<<endl;
-    cout<<"Thank you for playing"<<endl;
+    cout<<"Out of "<<totR<<" total round(s), "<<winner<<"won "<<highRW<<" round(s) of Poker."<<endl;
+    cout<<"Thank you for playing!"<<endl;
+    cout<<endl;
+    cout<<"(Your results can be found in Results.dat)"<<endl;
+    perWin=((p1Rw*1.0f)/totR)*100.0f;
+    //output results to a file
+    fout<<fixed<<setprecision(2)<<showpoint;
+    fout<<"Player name : "<<player1<<endl;
+    fout<<"Round Wins  : "<<p1Rw<<endl;
+    fout<<"Total Rounds: "<<totR<<endl;
+    fout<<"Percent Win : %"<<perWin;
+    fout.close();
     //Exit Stage Right!
     return 0;
 }
@@ -105,6 +119,8 @@ void rules(){
     cout<<"Whoever has the best combination of cards based on rankings will win the round."<<endl;
     cout<<"The more rare the hand, the higher the ranking will be."<<endl;
     cout<<"The worst hand is nothing special with just a High Card, while the best is a Royal Flush."<<endl;
+    cout<<"In the event that two players have the same hand, the higher card (pair,flush,etc)"<<endl;
+    cout<<"will win."<<endl;
      do{
     cout<<"The Hand Rankings are as followed:"<<endl;
     cout<<"0.High Card | 1.Pair | 2.Two Pair | 3.Three of a Kind | 4.Straight "<<endl;
@@ -207,7 +223,6 @@ short round(string z,short x[]){
     short ai2c1=0,ai2c2=0,ai2c3=0,ai2c4=0,ai2c5=0;//computer 2 hand
     short ai3c1=0,ai3c2=0,ai3c3=0,ai3c4=0,ai3c5=0;//computer 3 hand
     short hc=0,ai1hc=0,ai2hc=0,ai3hc=0;//high card for tie hands
-    short hc2=0,ai1hc2=0,ai2hc2=0,ai3hc2=0;//second high card for tie hands
     short winNum;//player number who has top hand
     string ai1R,ai2R,ai3R,plR; //quick string for hand ranking
     cout<<"*************************"<<endl;
@@ -238,10 +253,10 @@ short round(string z,short x[]){
     hiCard(ai2c1,ai2c2,ai2c3,ai2c4,ai2c5);
     hiCard(ai3c1,ai3c2,ai3c3,ai3c4,ai3c5);
     //find hand value
-    usrHand=ranking(c1,c2,c3,c4,c5,hc,hc2);
-    ai1Hand=ranking(ai1c1,ai1c2,ai1c3,ai1c4,ai1c5,ai1hc,ai1hc2);
-    ai2Hand=ranking(ai2c1,ai2c2,ai2c3,ai2c4,ai2c5,ai2hc,ai2hc2);
-    ai3Hand=ranking(ai3c1,ai3c2,ai3c3,ai3c4,ai3c5,ai3hc,ai3hc2);
+    usrHand=ranking(c1,c2,c3,c4,c5,hc);
+    ai1Hand=ranking(ai1c1,ai1c2,ai1c3,ai1c4,ai1c5,ai1hc);
+    ai2Hand=ranking(ai2c1,ai2c2,ai2c3,ai2c4,ai2c5,ai2hc);
+    ai3Hand=ranking(ai3c1,ai3c2,ai3c3,ai3c4,ai3c5,ai3hc);
     //set string for ai hand ranking
     plR=aiRank(usrHand);
     ai1R=aiRank(ai1Hand);
@@ -260,7 +275,7 @@ short round(string z,short x[]){
     //Display player hand
     cout<<"Your Hand: "<<cardVal(c1)<<"|"<<cardVal(c2)<<"|"<<cardVal(c3)<<
                 "|"<<cardVal(c4)<<"|"<<cardVal(c5)<<endl;
-    cout<<"Please hit enter to see everyone's hands:"<<endl;
+    cout<<"Please hit enter twice to see everyone's hands:"<<endl;
     cin.get();
     cin.ignore();
     //Unveil all hands
@@ -275,14 +290,14 @@ short round(string z,short x[]){
     cout<<"Phil's Hand: "<<cardVal(ai3c1)<<"|"<<cardVal(ai3c2)<<"|"<<cardVal(ai3c3)<<
                 "|"<<cardVal(ai3c4)<<"|"<<cardVal(ai3c5)<<"  ("<<ai3R<<")"<<endl;
     //Unveil winning hand
-    cout<<"Please hit enter to find the winning hand:"<<endl;
+    cout<<"Please hit enter twice to find the winning hand:"<<endl;
     cin.get();
     cin.ignore();
     cout<<"*************************"<<endl;
     winNum=winHand(usrHand,ai1Hand,ai2Hand,ai3Hand,hc,ai1hc,ai2hc,ai3hc);
     string rndWinr=winner(z,winNum);
     cout<<rndWinr<<" has the winning hand. "<<endl;
-    cout<<"Please hit enter to continue:"<<endl;
+    cout<<"Please hit enter twice to continue:"<<endl;
     cin.get();
     cin.ignore();
     cout<<"*************************"<<endl;
@@ -371,7 +386,7 @@ string cardVal(short v){
 //*********************************************//
 //*             Hand Ranking                  *//
 //*********************************************//
-short ranking(short a,short b,short c,short d,short e, short &hi1, short &hi2){
+short ranking(short a,short b,short c,short d,short e, short &hi1){
     //high card hand value= 1
     short value=1,temp;
     char str='N',flu='N';
@@ -389,13 +404,13 @@ short ranking(short a,short b,short c,short d,short e, short &hi1, short &hi2){
     //high card for flush
     if(value==6) hi1=e;
     //pair = 2
-    if(a==b||a==c||a==d) value=2,hi1=a,hi2=e;
-    if(a==e)value=2,hi1=a,hi2=d;
-    if(b==c||b==d) value=2,hi1=b,hi2=e;
-    if(c==d) value=2,hi1=c,hi2=e;
-    if(c==e) value=2,hi1=c,hi2=d;
-    if(d==e) value=2,hi1=e,hi2=c;
-    if(b==e) value=2,hi1=e,hi2=d;
+    if(a==b||a==c||a==d) value=2,hi1=a;
+    if(a==e)value=2,hi1=a;
+    if(b==c||b==d) value=2,hi1=b;
+    if(c==d) value=2,hi1=c;
+    if(c==e) value=2,hi1=c;
+    if(d==e) value=2,hi1=e;
+    if(b==e) value=2,hi1=e;
     //two pair = 3
     if((b==c&&d==e)||(b==d&&c==e)||(b==e&&c==d)) value=3,hi1=b;
     if((a==c&&d==e)||(a==e&&c==d)||(a==d&&c==e)) value=3,hi1=a;
