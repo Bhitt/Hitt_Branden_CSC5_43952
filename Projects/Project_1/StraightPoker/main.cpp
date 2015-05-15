@@ -20,7 +20,6 @@ using namespace std;
 
 //Function Prototypes
 void rules();//instructions on how to play
-void rDsplay();//hand ranking display
 void iniDeck(short [],short);//initializes and shuffles the deck
 short round(string ,short []);//starts a new round of poker
 void deal1(short &,short []);//deal 1 card
@@ -197,12 +196,6 @@ void rules(){
     cout<<"*************************"<<endl;
     }
     }while(cho=='Y'||cho=='y');
-}
-//*********************************************//
-//*         Hand Rankings Display             *//
-//*********************************************//
-void rDsplay(){
-    cout<<"This is where the hand rankings will be displayed for the player"<<endl;
 }
 //*********************************************//
 //*             Initialize Deck               *//
