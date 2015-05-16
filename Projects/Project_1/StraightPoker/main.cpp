@@ -10,7 +10,7 @@
 #include <ctime>//computer time
 #include <cstdlib>//for random seed
 #include <iomanip>//formatting
-#include <string>//strings
+#include <string>//for strings
 #include <fstream>//file in/out
 using namespace std;
 
@@ -33,15 +33,15 @@ string winner(string,short);//find round winner
 int main(int argc, char** argv) {
     //Declare Variables
     ofstream fout;//output to file
-    fout.open("Results.Dat");
-    srand(static_cast<unsigned int>(time(0)));
+    fout.open("Results.Dat");//open file
+    srand(static_cast<unsigned int>(time(0)));//set random seed
     char info,repeat;//input for info query, and repeat query
     short p1Rw=0,p2Rw=0,p3Rw=0,p4Rw=0;//total wins for each player
     string winner, player1;//overall winner and player name input
     const short SIZE=53;//size of the deck
     short deck[SIZE]={};//declare array with zeros
     short rWin=0;//current round win
-    float perWin,totR=0;//percentage of wins for the player/ totals rounds
+    float perWin; int totR=0;//percentage of wins for the player/ totals rounds
     iniDeck(deck,SIZE);//fill array with card values (1-52)
     cout<<"This is a table for Straight Poker."<<endl;
     //Prompt for rules
@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
     cout<<"otherwise, enter in 'N'"<<endl;
     cin>>info;
     if(info=='I'||info=='i') rules();
-    //Buy-in
+    //prompt for name of player
     cout<<"*************************"<<endl;
     cout<<"Please first enter in your name:"<<endl;
     cin>>player1;
@@ -65,21 +65,21 @@ int main(int argc, char** argv) {
     cout<<"Please hit enter twice to continue"<<endl;
     cin.get();
     cin.ignore();
-    do{
+    do{//do
         //Start new round
         rWin=round(player1,deck);
-        if(rWin==1) p1Rw++;//player 1 win
-        if(rWin==2) p2Rw++;//player 2 win
-        if(rWin==3) p3Rw++;//player 3 win
-        if(rWin==4) p4Rw++;//player 4 win
-        //Shuffle and go back to new round if needed
+        if(rWin==1) p1Rw++;//if 1 player 1 win round
+        if(rWin==2) p2Rw++;//if 2 player 2 win round
+        if(rWin==3) p3Rw++;//if player 3 win round
+        if(rWin==4) p4Rw++;//if player 4 win round
+        //Shuffle 
         iniDeck(deck,SIZE);
         totR++;//increment the total rounds
         cout<<"*************************"<<endl;
         cout<<"Would you like to play another hand?"<<endl;
         cout<<"Enter in Y for yes or N for no:"<<endl;
         cin>>repeat;//prompt for new round
-    }while(repeat=='Y'||repeat=='y');
+    }while(repeat=='Y'||repeat=='y');//while player wants to repeat
     //Congratulate Overall Winner
     cout<<"*************************"<<endl;
     winner=player1+" ";
@@ -110,18 +110,19 @@ int main(int argc, char** argv) {
 //*             Rules Function                *//
 //*********************************************//              
 void rules(){
-    char menu,cho='N';
-    bool skip=false;
+    //declare variables
+    char menu,cho='N';//menu / choice
+    bool skip=false;//bool for skip 
     cout<<"*************************"<<endl;
-    cout<<"How to Play:"<<endl;
+    cout<<"How to Play:"<<endl;//begin explanation of how to play
     cout<<"Each player is dealt 5 random cards (or a Hand) from a standard 52-card deck."<<endl;
     cout<<"Whoever has the best combination of cards based on rankings will win the round."<<endl;
     cout<<"The more rare the hand, the higher the ranking will be."<<endl;
     cout<<"The worst hand is nothing special with just a High Card, while the best is a Royal Flush."<<endl;
     cout<<"In the event that two players have the same hand, the higher card (pair,flush,etc)"<<endl;
     cout<<"will win."<<endl;
-     do{
-    cout<<"The Hand Rankings are as followed:"<<endl;
+     do{//do
+    cout<<"The Hand Rankings are as followed:"<<endl;//start showing hand rankings
     cout<<"0.High Card | 1.Pair | 2.Two Pair | 3.Three of a Kind | 4.Straight "<<endl;
     cout<<"5.Flush | 6.Full House | 7.Four of a Kind | 8.Straight Flush | 9.Royal Flush"<<endl;
     cout<<"*************************"<<endl;
@@ -129,80 +130,80 @@ void rules(){
     cout<<"the corresponding number. (for example: enter in 4 to view a straight)"<<endl;
     cout<<"Otherwise, enter in S to get started:"<<endl;
     cout<<"*************************"<<endl;
-    cin>>menu;
+    cin>>menu;//prompt for specific hand ranking display
     cout<<"*************************"<<endl;
-    switch(menu){
-        case'0':{
+    switch(menu){//menu for hand display
+        case'0':{//case for hi card
             cout<<"High Card: This hand has nothing to rely on but a High card."<<endl;
             cout<<"Ex: 3 Diamonds | Jack Clubs | 8 Spades | 4 Hearts | 2 Spades"<<endl;
             break;
         }
-        case'1':{
+        case'1':{//case for pair
             cout<<"Pair: Two cards of the same rank."<<endl;
             cout<<"Ex: Ace Hearts | Ace Diamonds | 8 Clubs | 4 Spades | 7 Hearts"<<endl;
             break;
         }
-        case'2':{
+        case'2':{//case for two pair
             cout<<"Two Pair: Two different pairs of cards."<<endl;
             cout<<"Ex: 4 Spades | 4 Clubs | 3 Clubs | 3 Diamonds | Queen Clubs"<<endl;
             break;
         }
-        case'3':{
+        case'3':{//case for three of a kind
             cout<<"Three of a Kind: Three cards of the same rank."<<endl;
             cout<<"Ex: 7 Clubs | 7 Diamonds | 7 Spades | King Clubs | 3 Diamonds"<<endl;
             break;
         }
-        case'4':{
+        case'4':{//case for straight
             cout<<"Straight: Five cards in a sequence, but not of the same suit."<<endl;
             cout<<"Ex: 5 Hearts | 6 Diamonds | 7 Spades | 8 Diamonds | 9 Clubs"<<endl;
             break;
         }
-        case'5':{
+        case'5':{//case for flush
             cout<<"Flush: Any five cards of the same suit, but not in a sequence."<<endl;
             cout<<"Ex: 4 Spades | Jack Spades | 8 Spades | 2 Spades | 9 Spades"<<endl;
             break;
         }
-        case'6':{
+        case'6':{//case for full house
             cout<<"Full House: Three of a Kind and a Pair."<<endl;
             cout<<"Ex: 10 Hearts | 10 Diamonds | 10 Spades | 9 Clubs | 9 Diamonds"<<endl;
             break;
         }
-        case'7':{
+        case'7':{//case for four of a kind
             cout<<"Four of a Kind: All four cards of the same rank."<<endl;
             cout<<"Ex: Jack Hearts | Jack Spades | Jack Diamonds | Jack Clubs | 7 Hearts"<<endl;
             break;
         }
-        case'8':{
+        case'8':{//case for straight flush
             cout<<"Straight Flush: Five cards in a sequence, all in the same suit."<<endl;
             cout<<"Ex: 4 Spades | 5 Spades | 6 Spades | 7 Spades | 8 Spades"<<endl;
             break;
         }
-        case'9':{
+        case'9':{//case for royal flush
             cout<<"Royal Flush: 10, J, Q, K, A (all in the same suit)."<<endl;
             cout<<"Ex: 10 Spades | Jack Spades | Queen Spades | King Spades | Ace Spades"<<endl;
             break;
         }
-        default:{
+        default:{//default for skip
             cho=='N';
-            skip=true;
+            skip=true;//set skip to true
             break;
         }    
     }
-    if(skip==false){
+    if(skip==false){//if skip is false
     cout<<"*************************"<<endl;
     cout<<"Would you like to view another Hand Ranking?"<<endl;
     cout<<"Enter in Y for yes or N for no:"<<endl;
-    cin>>cho;
+    cin>>cho;//prompt for repeat
     cout<<"*************************"<<endl;
     }
-    }while(cho=='Y'||cho=='y');
+    }while(cho=='Y'||cho=='y');//while player wants to repeat
 }
 //*********************************************//
 //*             Initialize Deck               *//
 //*********************************************//
 void iniDeck(short cards[],short n){
-    for(int i=0;i<n;i++){
-        cards[i]=i;
+    for(int i=0;i<n;i++){//increment while still in array
+        cards[i]=i;//for position i, set i to i ex: 41 =41
     }
 }
 //*********************************************//
@@ -255,7 +256,7 @@ short round(string z,short x[]){
     ai1R=aiRank(ai1Hand);
     ai2R=aiRank(ai2Hand);
     ai3R=aiRank(ai3Hand);
-    //state hand value
+    //state player hand value
     if(usrHand==1)cout<<"Your hand value is low with just a high card ("<<cardVal(c5)<<")."<<endl;
     if(usrHand==2)cout<<"Your hand value is average with just a pair."<<endl;
     if(usrHand==3)cout<<"You have two pair."<<endl;
@@ -282,44 +283,45 @@ short round(string z,short x[]){
                 "|"<<cardVal(ai2c4)<<"|"<<cardVal(ai2c5)<<"  ("<<ai2R<<")"<<endl;
     cout<<"Phil's Hand: "<<cardVal(ai3c1)<<"|"<<cardVal(ai3c2)<<"|"<<cardVal(ai3c3)<<
                 "|"<<cardVal(ai3c4)<<"|"<<cardVal(ai3c5)<<"  ("<<ai3R<<")"<<endl;
-    //Unveil winning hand
     cout<<"Please hit enter twice to find the winning hand:"<<endl;
     cin.get();
     cin.ignore();
     cout<<"*************************"<<endl;
-    winNum=winHand(usrHand,ai1Hand,ai2Hand,ai3Hand,hc,ai1hc,ai2hc,ai3hc);
-    string rndWinr=winner(z,winNum);
-    cout<<rndWinr<<" has the winning hand. "<<endl;
+    //find winning hand
+    winNum=winHand(usrHand,ai1Hand,ai2Hand,ai3Hand,hc,ai1hc,ai2hc,ai3hc);//find winNum
+    string rndWinr=winner(z,winNum);//find winner name
+    cout<<rndWinr<<" has the winning hand. "<<endl;//state winner
     cout<<"Please hit enter twice to continue:"<<endl;
     cin.get();
     cin.ignore();
     cout<<"*************************"<<endl;
-    return winNum;
+    return winNum;//return winner number
 }
 //*********************************************//
 //*               Deal 1                      *//
 //*********************************************//
 void deal1(short &c1,short y[]){
-    char repeat;
-    short card;
-    do{
-    card=rand()%52+1;
-    if(y[card]==0){
-       repeat='Y'; 
-    }else{
-        repeat='N';
-    }
-    }while(repeat=='Y');
-    y[card]=0;
-    c1=card;
+    //declare variables
+    char repeat;//repeat
+    short card;//new card
+    do{//do
+        card=rand()%52+1;//pick random number
+        if(y[card]==0){//if card is 0, then its already picked, so repeat
+           repeat='Y'; 
+        }else{//else dont repeat
+            repeat='N';
+        }
+    }while(repeat=='Y');//while need new card
+    y[card]=0;//set the card you picked to zero in array
+    c1=card;//c1 = card
 }
 //*********************************************//
 //*             Card Values                   *//
 //*********************************************//
 string cardVal(short v){
-    string f;
+    string f;//declare string f for card name
     //Spades
-    if(v==1)f="2 Spades"; 
+    if(v==1)f="2 Spades";
     if(v==2) f="3 Spades";
     if(v==3) f="4 Spades";
     if(v==4) f="5 Spades";
@@ -374,15 +376,16 @@ string cardVal(short v){
     if(v==50) f="Queen Diamonds";
     if(v==51) f="King Diamonds";
     if(v==52) f="Ace Diamonds";
-    return f;
+    return f;//return card name
 }
 //*********************************************//
 //*             Hand Ranking                  *//
 //*********************************************//
 short ranking(short a,short b,short c,short d,short e, short &hi1){
+    //declare variables
     //high card hand value= 1
-    short value=1,temp;
-    char str='N',flu='N';
+    short value=1,temp;//temp
+    char str='N',flu='N';// straight = n, flush = n
     //flush = 6
     if((a>=1&&a<=13)&&(b>=1&&b<=13)&&(c>=1&&c<=13)&&(d>=1&&d<=13)&&(e>=1&&e<=13)) value=6,flu='Y'; //spades
     if((a>=14&&a<=26)&&(b>=14&&b<=26)&&(c>=14&&c<=26)&&(d>=14&&d<=26)&&(e>=14&&e<=26)) value=6,flu='Y'; //hearts
@@ -444,33 +447,33 @@ short ranking(short a,short b,short c,short d,short e, short &hi1){
     if((b==c&&d==e&&c==d)||(a==c&&d==e&&c==d)||(a==b&&d==e&&b==d)) value=8,hi1=d;
     if((a==b&&c==e&&b==c)||(a==b&&c==d&&b==c)) value=8,hi1=a;
     //straight flush = 9
-    if(flu=='Y'&&str=='Y') value=9;
-    return value;
+    if(flu=='Y'&&str=='Y') value=9;// if flush and straight then value =9
+    return value;//return hand value
 }
 //*********************************************//
 //*             Computer Hand                 *//
 //*********************************************//
 string aiRank(short a){
-    string state;
-    if(a==1)state="High card";
-    if(a==2)state="Pair";
-    if(a==3)state="Two Pair";
-    if(a==4)state="Three of a Kind";
-    if(a==5)state="Straight";
-    if(a==6)state="Flush";
-    if(a==7)state="Full House";
-    if(a==8)state="Four of a Kind";
-    if(a==9)state="Straight Flush";
-    return state;
+    string state;//declare string for hand type
+    if(a==1)state="High card";//if 1 then high card
+    if(a==2)state="Pair";//if 2 then pair
+    if(a==3)state="Two Pair";//if 3 then two pair
+    if(a==4)state="Three of a Kind";// if 4 then 3 of a kind
+    if(a==5)state="Straight";//if 5 then straight
+    if(a==6)state="Flush";//if 6 then flush
+    if(a==7)state="Full House";// 7 then full house
+    if(a==8)state="Four of a Kind";//if 8 then four of a kind
+    if(a==9)state="Straight Flush";// if 9 then straight flush
+    return state;//return string for hand type
 }
 //*********************************************//
 //*               High Card/Sort              *//
 //*********************************************//
 void hiCard(short &a,short &b,short &c,short &d,short &e){
-    short tempa=a,tempb=b,tempc=c,tempd=d,tempe=e;
+    short tempa=a,tempb=b,tempc=c,tempd=d,tempe=e;//temp variables for swap
     short temp=0;
     //get rid of suits
-    for(tempa;tempa>13;tempa-=13);
+    for(tempa;tempa>13;tempa-=13);//take away 13 for values above 13
     for(tempb;tempb>13;tempb-=13);
     for(tempc;tempc>13;tempc-=13);
     for(tempd;tempd>13;tempd-=13);
@@ -478,7 +481,7 @@ void hiCard(short &a,short &b,short &c,short &d,short &e){
     //sort first value
     if(tempa>tempb){
         temp=tempa,tempa=tempb,tempb=temp;
-        temp=a,a=b,b=temp;
+        temp=a,a=b,b=temp;//swap if needed
     }
     if(tempa>tempc){
         temp=tempa,tempa=tempc,tempc=temp;
@@ -493,7 +496,7 @@ void hiCard(short &a,short &b,short &c,short &d,short &e){
         temp=a,a=e,e=temp;
     }
     //sort second value
-    if(tempb>tempc){
+    if(tempb>tempc){//swap if needed
         temp=tempb,tempb=tempc,tempc=temp;
         temp=b,b=c,c=temp;
     }
@@ -508,7 +511,7 @@ void hiCard(short &a,short &b,short &c,short &d,short &e){
     //sort third value
     if(tempc>tempd){
         temp=tempc,tempc=tempd,tempd=temp;
-        temp=c,c=d,d=temp;
+        temp=c,c=d,d=temp;//swap if needed
     }
     if(tempc>tempe){
         temp=tempc,tempc=tempe,tempe=temp;
@@ -517,7 +520,7 @@ void hiCard(short &a,short &b,short &c,short &d,short &e){
     //sort fourth value
     if(tempd>tempe){
         temp=tempd,tempd=tempe,tempe=temp;
-        temp=d,d=e,e=temp;
+        temp=d,d=e,e=temp;//swap if needed
     }
 }
 //*********************************************//
@@ -525,19 +528,19 @@ void hiCard(short &a,short &b,short &c,short &d,short &e){
 //*********************************************//
 short winHand(short a,short b,short c,short d,short h1,short h2,short h3,short h4){
     //find top hand value
-    short topHand=a,pl1=0,pl2=0,pl3=0,pl4=0,win;
+    short topHand=a,pl1=0,pl2=0,pl3=0,pl4=0,win;//declare variables for ties
     if(b>topHand) topHand=b;
     if(c>topHand) topHand=c;
     if(d>topHand) topHand=d;
-    //find all that have the value of the top hand
+    //find all that have the same value of the top hand
     if(a==topHand) pl1=1;
     if(b==topHand) pl2=1;
     if(c==topHand) pl3=1;
     if(d==topHand) pl4=1;
     //compare ties for top hand
-    if((pl1==1)&&(pl2==1)){
-        if(h1>h2) win=1;
-        if(h2>h1) win=2;
+    if((pl1==1)&&(pl2==1)){//if two have tie
+        if(h1>h2) win=1;//win =1
+        if(h2>h1) win=2;//win =2
     }
     if((pl1==1)&&(pl3==1)){
         if(h1>h3) win=1;
@@ -559,10 +562,10 @@ short winHand(short a,short b,short c,short d,short h1,short h2,short h3,short h
         if(h3>h4) win=3;
         if(h4>h3) win=4;
     }
-    if((pl1==1)&&(pl2==1)&&(pl3==1)){
-        if(h1>h2&&h1>h3) win=1;
-        if(h2>h1&&h2>h3) win=2;
-        if(h3>h1&&h3>h2) win=3;
+    if((pl1==1)&&(pl2==1)&&(pl3==1)){//if 3 have tie
+        if(h1>h2&&h1>h3) win=1;//win 1
+        if(h2>h1&&h2>h3) win=2;//win 2
+        if(h3>h1&&h3>h2) win=3;//win 3
     }
     if((pl1==1)&&(pl3==1)&&(pl4==1)){
         if(h1>h4&&h1>h3) win=1;
@@ -579,16 +582,17 @@ short winHand(short a,short b,short c,short d,short h1,short h2,short h3,short h
         if(h2>h3&&h2>h4) win=2;
         if(h4>h3&&h4>h2) win=4;
     }
-    if((pl1==1)&&(pl2==1)&&(pl3==1)&&(pl4==1)){
-        if(h1>h2&&h1>h3&&h1>h4) win=1;
-        if(h2>h1&&h2>h3&&h2>h4) win=2;
-        if(h3>h2&&h3>h1&&h3>h4) win=3;
-        if(h4>h2&&h4>h3&&h4>h1) win=4;
+    if((pl1==1)&&(pl2==1)&&(pl3==1)&&(pl4==1)){//if 4 tie
+        if(h1>h2&&h1>h3&&h1>h4) win=1;//win 1
+        if(h2>h1&&h2>h3&&h2>h4) win=2;//win 2
+        if(h3>h2&&h3>h1&&h3>h4) win=3;//win 3
+        if(h4>h2&&h4>h3&&h4>h1) win=4;//win 4
     }
-    if((pl1==1)&&(pl2==0)&&(pl3==0)&&(pl4==0)) win=1;
-    if((pl1==0)&&(pl2==1)&&(pl3==0)&&(pl4==0)) win=2;
-    if((pl1==0)&&(pl2==0)&&(pl3==1)&&(pl4==0)) win=3;
-    if((pl1==0)&&(pl2==0)&&(pl3==0)&&(pl4==1)) win=4;
+    //if no tie
+    if((pl1==1)&&(pl2==0)&&(pl3==0)&&(pl4==0)) win=1;//win 1
+    if((pl1==0)&&(pl2==1)&&(pl3==0)&&(pl4==0)) win=2;//win 2
+    if((pl1==0)&&(pl2==0)&&(pl3==1)&&(pl4==0)) win=3;//win 3
+    if((pl1==0)&&(pl2==0)&&(pl3==0)&&(pl4==1)) win=4;//win 4
     //return win
     return win;
 }
@@ -596,11 +600,11 @@ short winHand(short a,short b,short c,short d,short h1,short h2,short h3,short h
 //*            Winning Player                 *//
 //*********************************************//
 string winner(string you,short a){
-    string winner; 
-    if(a==1) winner=you;
-    if(a==2) winner="Tom";
-    if(a==3) winner="Howard";
-    if(a==4) winner="Phil";
-    if(a<1||a>4) winner="(Tie Game) No one";
-    return winner;
+    string winner;//declare string variable for winner
+    if(a==1) winner=you;//if 1 then winner = user
+    if(a==2) winner="Tom";//if 2 then winner = tom
+    if(a==3) winner="Howard";//if 3 then winner = howard
+    if(a==4) winner="Phil";// if 4 then winner = phil
+    if(a<1||a>4) winner="(Tie Game) No one";// else tie game
+    return winner;//return winner
 }
