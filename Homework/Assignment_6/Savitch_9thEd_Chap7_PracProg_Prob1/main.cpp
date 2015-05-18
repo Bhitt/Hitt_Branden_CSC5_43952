@@ -1,8 +1,8 @@
 /* 
  * File:   main.cpp
  * Author: Branden Hitt
- * Created on March 25, 2015, 10:10 AM
- *      Purpose: Astrology Program (find user's sign and horoscope)
+ * Created on May 18, 2015, 9:30 AM
+ *      Purpose: First or Last (2)
  */
 
 //System Libraries
