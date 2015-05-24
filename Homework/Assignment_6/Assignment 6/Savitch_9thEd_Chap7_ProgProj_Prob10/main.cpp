@@ -17,14 +17,14 @@ using namespace std;
 //Function Prototypes
 void inBoard(char [][3]);
 void display(char [][3],short);
-void move(char [][3],short,short);
+bool move(char [][3],short,short);
 bool chkWin(char[][3]);
 //Execution Begins Here!
 int main(int argc, char** argv) {
     //Declare Variables
     char board[3][3],winner;
-    short cho;
-    bool win=false;
+    short cho,turns=0;
+    bool win=false,check,tie=false;
     //reset the board
     inBoard(board);
     //Prompt the user for inputs
@@ -33,24 +33,33 @@ int main(int argc, char** argv) {
     display(board,3);
     cout<<endl;
     do{
-        cout<<"Player X it is your turn:"<<endl;
-        cin>>cho;
-        move(board,1,cho);
+        do{
+            cout<<"Player X it is your turn:"<<endl;
+            cin>>cho;
+            check=move(board,1,cho);
+        }while(check==false||cho<1||cho>9);
         display(board,3);
+        turns++;
+        if(turns>=9) tie=true;
         win=chkWin(board);
         if(win==true)winner='X';
-        if(win==false){
-        cout<<"Player O it is your turn:"<<endl;
-        cin>>cho;
-        move(board,2,cho);
-        display(board,3);
-        win=chkWin(board);
-        if(win==true) winner='O';
-        }
-    }while(win==false);
+        if(win==false&&tie==false){
+            do{
+                cout<<"Player O it is your turn:"<<endl;
+                cin>>cho;
+                check=move(board,2,cho);
+            }while(check==false||cho<1||cho>9);
+            display(board,3);
+            turns++;
+            if(turns>=9) tie=true;
+            win=chkWin(board);
+            if(win==true) winner='O';
+            }
+    }while(win==false&&tie==false);
     //Output winner
     cout<<endl;
-    cout<<"Congrats to player "<<winner<<"! They win!"<<endl;
+    if(win==true)cout<<"Congrats to player "<<winner<<"! They win!"<<endl;
+    else if(tie==true)cout<<"Tie game"<<endl;
     return 0;
 }
 //function to reset the board
@@ -69,9 +78,20 @@ void display(char a[][3],short b){
     }
 }
 //move
-void move(char a[][3],short p,short c){
+bool move(char a[][3],short p,short c){
     char piece='X';
     if(p==2) piece='O';
+    //check for duplicates
+    if(((c==1)&&(a[0][0]=='X'))||(c==1)&&(a[0][0]=='O')) return false;
+    else if(((c==2)&&(a[0][1]=='X'))||(c==2)&&(a[0][1]=='O')) return false;
+    else if(((c==3)&&(a[0][2]=='X'))||(c==3)&&(a[0][2]=='O')) return false;
+    else if(((c==4)&&(a[1][0]=='X'))||(c==4)&&(a[1][0]=='O')) return false;
+    else if(((c==5)&&(a[1][1]=='X'))||(c==5)&&(a[1][1]=='O')) return false;
+    else if(((c==6)&&(a[1][2]=='X'))||(c==6)&&(a[1][2]=='O')) return false;
+    else if(((c==7)&&(a[2][0]=='X'))||(c==7)&&(a[2][0]=='O')) return false;
+    else if(((c==8)&&(a[2][1]=='X'))||(c==8)&&(a[2][1]=='O')) return false;
+    else if(((c==9)&&(a[2][2]=='X'))||(c==9)&&(a[2][2]=='O')) return false;
+    //change array
     if(c==1) a[0][0]=piece;
     else if(c==2) a[0][1]=piece;
     else if(c==3) a[0][2]=piece;
@@ -81,6 +101,7 @@ void move(char a[][3],short p,short c){
     else if(c==7) a[2][0]=piece;
     else if(c==8) a[2][1]=piece;
     else if(c==9) a[2][2]=piece;
+    return true;
 }
 //check win
 bool chkWin(char a[][3]){
@@ -95,4 +116,7 @@ bool chkWin(char a[][3]){
     //diagonal win
     if((a[0][0]==a[1][1])&&(a[0][0]==a[2][2])) return true;
     if((a[0][2]==a[1][1])&&(a[0][2]==a[2][0])) return true;
+    else{
+        return false;
+    }
 }
