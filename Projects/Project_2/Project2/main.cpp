@@ -52,7 +52,8 @@ int main(int argc, char** argv) {
     //prompt for name of player
     cout<<"*************************"<<endl;
     cout<<"Please first enter in your name:"<<endl;
-    cin>>player1;
+    cin.ignore();
+    getline(cin,player1);
     cout<<"*************************"<<endl;
     cout<<"Hello, "<<player1<<"! Welcome to the table."<<endl;
     cout<<"Please hit enter to begin"<<endl;
