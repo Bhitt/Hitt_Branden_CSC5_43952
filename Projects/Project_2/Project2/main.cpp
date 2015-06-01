@@ -2,7 +2,7 @@
  * File:   main.cpp
  * Author: Branden Hitt
  * Created on May 6, 2015, 1:02 PM
- *      Purpose: Code a game of straight poker
+ *      Purpose: Head's Up Texas Holdem
  */
 
 //System Libraries
@@ -24,10 +24,10 @@ void iniDeck(short [],short);//initializes and shuffles the deck
 short round(string ,short []);//starts a new round of poker
 void deal1(short &,short []);//deal 1 card
 short ranking(short ,short ,short ,short ,short,short &);//gives hand value
-string aiRank(short); //finds ranking of computer hand
+string sRank(short); //finds a short string rank of hand
 string cardVal(short);//finds what the card is for output
 void hiCard(short &,short &,short &,short &,short &);//sort for high card
-short winHand(short,short,short,short,short,short,short,short);//find winning hand
+short winHand(short,short,short,short);//find winning hand
 string winner(string,short);//find round winner
 //Execution Begins Here!
 int main(int argc, char** argv) {
@@ -36,16 +36,16 @@ int main(int argc, char** argv) {
     fout.open("Results.Dat");//open file
     srand(static_cast<unsigned int>(time(0)));//set random seed
     char info,repeat;//input for info query, and repeat query
-    short p1Rw=0,p2Rw=0,p3Rw=0,p4Rw=0;//total wins for each player
+    short p1Rw=0,p2Rw=0;//total wins for each player
     string winner, player1;//overall winner and player name input
     const short SIZE=53;//size of the deck
     short deck[SIZE]={};//declare array with zeros
     short rWin=0;//current round win
     float perWin; int totR=0;//percentage of wins for the player/ totals rounds
     iniDeck(deck,SIZE);//fill array with card values (1-52)
-    cout<<"This is a table for Straight Poker."<<endl;
+    cout<<"This is a table for Heads Up Texas Hold'em."<<endl;
     //Prompt for rules
-    cout<<"If you would like instructions on how to play, then enter in 'I' now:"<<endl;
+    cout<<"If you would like instructions on how to play, enter in 'I' now:"<<endl;
     cout<<"otherwise, enter in 'N'"<<endl;
     cin>>info;
     if(info=='I'||info=='i') rules();
@@ -60,9 +60,8 @@ int main(int argc, char** argv) {
     cin.get();
     cin.ignore();
     cout<<"*************************"<<endl;
-    cout<<"Now that you are seated, why don't you meet the other players."<<endl;
-    cout<<"To your left is Tom Dwan, across from you is Howard Lederer, and to"<<endl;
-    cout<<"your right is Phil Ivey. Good luck players."<<endl;
+    cout<<"Now that you are seated, why don't you meet your opponent."<<endl;
+    cout<<"Across from you is poker legend, Phil Hellmuth."<<endl;
     cout<<"Please hit enter twice to continue"<<endl;
     cin.get();
     cin.ignore();
@@ -71,8 +70,6 @@ int main(int argc, char** argv) {
         rWin=round(player1,deck);
         if(rWin==1) p1Rw++;//if 1 player 1 win round
         if(rWin==2) p2Rw++;//if 2 player 2 win round
-        if(rWin==3) p3Rw++;//if player 3 win round
-        if(rWin==4) p4Rw++;//if player 4 win round
         //Shuffle 
         iniDeck(deck,SIZE);
         totR++;//increment the total rounds
@@ -83,16 +80,11 @@ int main(int argc, char** argv) {
     }while(repeat=='Y'||repeat=='y');//while player wants to repeat
     //Congratulate Overall Winner
     cout<<"*************************"<<endl;
-    winner=player1+" ";
     short highRW=p1Rw;
-    if(p2Rw>highRW) winner="Tom Dwan ", highRW=p2Rw;
-    else if(p2Rw==highRW) winner+="& Tom Dwan ";
-    if(p3Rw>highRW) winner="Howard Lederer ", highRW=p3Rw;
-    else if(p3Rw==highRW) winner+="& Howard Lederer ";
-    if(p4Rw>highRW) winner="Phil Ivey ", highRW=p4Rw;
-    else if(p4Rw==highRW) winner+="& Phil Ivey ";
-    cout<<"Congrats to "<<winner<<"for being the table's big winner(s)."<<endl;
-    cout<<"Out of "<<totR<<" total round(s), "<<winner<<"won "<<highRW<<" round(s) of Poker."<<endl;
+    winner=player1;
+    if(p2Rw>highRW) winner="Phil Helmuth ", highRW=p2Rw;
+    cout<<"Congrats to "<<winner<<" for being the table's big winner."<<endl;
+    cout<<"Out of "<<totR<<" total round(s), "<<winner<<" won "<<highRW<<" round(s) of Poker."<<endl;
     cout<<"Thank you for playing!"<<endl;
     cout<<endl;
     cout<<"(Your results can be found in Results.dat)"<<endl;
@@ -116,8 +108,12 @@ void rules(){
     bool skip=false;//bool for skip 
     cout<<"*************************"<<endl;
     cout<<"How to Play:"<<endl;//begin explanation of how to play
-    cout<<"Each player is dealt 5 random cards (or a Hand) from a standard 52-card deck."<<endl;
-    cout<<"Whoever has the best combination of cards based on rankings will win the round."<<endl;
+    cout<<"Each player is dealt 2 cards from a standard 52-card deck."<<endl;
+    cout<<"Then each player will have a chance to bet."<<endl;
+    cout<<"From there, 3 community cards will be dealt to the center."<<endl;
+    cout<<"(Community cards will be used in combination with any of your hole cards"<<endl;
+    cout<<"to determine your final hand)"<<endl;
+    cout<<"Whoever has the best combination of cards based on rankings will win the round/pot."<<endl;
     cout<<"The more rare the hand, the higher the ranking will be."<<endl;
     cout<<"The worst hand is nothing special with just a High Card, while the best is a Royal Flush."<<endl;
     cout<<"In the event that two players have the same hand, the higher card (pair,flush,etc)"<<endl;
@@ -212,51 +208,37 @@ void iniDeck(short cards[],short n){
 //*********************************************//
 short round(string z,short x[]){
     //Declare variables
-    short c1=0,c2=0,c3=0,c4=0,c5=0;//player cards
+    short c1=0,c2=0,c3=0,c4=0,c5=0;//player hole cards
     short usrHand,ai1Hand,ai2Hand,ai3Hand;//hand values
-    short ai1c1=0,ai1c2=0,ai1c3=0,ai1c4=0,ai1c5=0;//computer 1 hand
-    short ai2c1=0,ai2c2=0,ai2c3=0,ai2c4=0,ai2c5=0;//computer 2 hand
-    short ai3c1=0,ai3c2=0,ai3c3=0,ai3c4=0,ai3c5=0;//computer 3 hand
-    short hc=0,ai1hc=0,ai2hc=0,ai3hc=0;//high card for tie hands
+    short ai1c1=0,ai1c2=0,ai1c3=0,ai1c4=0,ai1c5=0;//computer hole cards
+    short com1,com2,com3,com4,com5;//community cards
+    short hc=0,ai1hc=0;//high card for tie hands
     short winNum;//player number who has top hand
-    string ai1R,ai2R,ai3R,plR; //quick string for hand ranking
+    string plR,ai1R; //quick string for hand ranking
     cout<<"*************************"<<endl;
     //Deal individual hands
     deal1(c1,x);
     deal1(c2,x);
-    deal1(c3,x);
-    deal1(c4,x);
-    deal1(c5,x);
     deal1(ai1c1,x);
     deal1(ai1c2,x);
-    deal1(ai1c3,x);
-    deal1(ai1c4,x);
-    deal1(ai1c5,x);
-    deal1(ai2c1,x);
-    deal1(ai2c2,x);
-    deal1(ai2c3,x);
-    deal1(ai2c4,x);
-    deal1(ai2c5,x);
-    deal1(ai3c1,x);
-    deal1(ai3c2,x);
-    deal1(ai3c3,x);
-    deal1(ai3c4,x);
-    deal1(ai3c5,x);
+    //Deal 3 Community Cards (Flop)
+    deal1(com1,x);
+    deal1(com2,x);
+    deal1(com3,x);
+    //Deal 1 Community Card (Turn)
+    deal1(com4,x);
+    //Deal 1 Community Card (River)
+    deal1(com5,x);
     //high card and sort
     hiCard(c1,c2,c3,c4,c5);
     hiCard(ai1c1,ai1c2,ai1c3,ai1c4,ai1c5);
-    hiCard(ai2c1,ai2c2,ai2c3,ai2c4,ai2c5);
-    hiCard(ai3c1,ai3c2,ai3c3,ai3c4,ai3c5);
-    //find hand value
+    //find hand value of player
     usrHand=ranking(c1,c2,c3,c4,c5,hc);
+    //find hand value of computer
     ai1Hand=ranking(ai1c1,ai1c2,ai1c3,ai1c4,ai1c5,ai1hc);
-    ai2Hand=ranking(ai2c1,ai2c2,ai2c3,ai2c4,ai2c5,ai2hc);
-    ai3Hand=ranking(ai3c1,ai3c2,ai3c3,ai3c4,ai3c5,ai3hc);
-    //set string for ai hand ranking
-    plR=aiRank(usrHand);
-    ai1R=aiRank(ai1Hand);
-    ai2R=aiRank(ai2Hand);
-    ai3R=aiRank(ai3Hand);
+    //set string for short hand ranking
+    plR=sRank(usrHand);
+    ai1R=sRank(ai1Hand);
     //state player hand value
     if(usrHand==1)cout<<"Your hand value is low with just a high card ("<<cardVal(c5)<<")."<<endl;
     if(usrHand==2)cout<<"Your hand value is average with just a pair."<<endl;
@@ -270,7 +252,7 @@ short round(string z,short x[]){
     //Display player hand
     cout<<"Your Hand: "<<cardVal(c1)<<"|"<<cardVal(c2)<<"|"<<cardVal(c3)<<
                 "|"<<cardVal(c4)<<"|"<<cardVal(c5)<<endl;
-    cout<<"Please hit enter twice to see everyone's hands:"<<endl;
+    cout<<"Please hit enter twice to start betting:"<<endl;
     cin.get();
     cin.ignore();
     //Unveil all hands
@@ -278,18 +260,14 @@ short round(string z,short x[]){
     cout<<"               All Player Hands     "<<endl;
     cout<<"Your Hand: "<<cardVal(c1)<<"|"<<cardVal(c2)<<"|"<<cardVal(c3)<<
                 "|"<<cardVal(c4)<<"|"<<cardVal(c5)<<"  ("<<plR<<")"<<endl;
-    cout<<"Tom's Hand: "<<cardVal(ai1c1)<<"|"<<cardVal(ai1c2)<<"|"<<cardVal(ai1c3)<<
+    cout<<"Phil's Hand: "<<cardVal(ai1c1)<<"|"<<cardVal(ai1c2)<<"|"<<cardVal(ai1c3)<<
                 "|"<<cardVal(ai1c4)<<"|"<<cardVal(ai1c5)<<"  ("<<ai1R<<")"<<endl;
-    cout<<"Howard's Hand: "<<cardVal(ai2c1)<<"|"<<cardVal(ai2c2)<<"|"<<cardVal(ai2c3)<<
-                "|"<<cardVal(ai2c4)<<"|"<<cardVal(ai2c5)<<"  ("<<ai2R<<")"<<endl;
-    cout<<"Phil's Hand: "<<cardVal(ai3c1)<<"|"<<cardVal(ai3c2)<<"|"<<cardVal(ai3c3)<<
-                "|"<<cardVal(ai3c4)<<"|"<<cardVal(ai3c5)<<"  ("<<ai3R<<")"<<endl;
     cout<<"Please hit enter twice to find the winning hand:"<<endl;
     cin.get();
     cin.ignore();
     cout<<"*************************"<<endl;
     //find winning hand
-    winNum=winHand(usrHand,ai1Hand,ai2Hand,ai3Hand,hc,ai1hc,ai2hc,ai3hc);//find winNum
+    winNum=winHand(usrHand,ai1Hand,hc,ai1hc);//find winNum
     string rndWinr=winner(z,winNum);//find winner name
     cout<<rndWinr<<" has the winning hand. "<<endl;//state winner
     cout<<"Please hit enter twice to continue:"<<endl;
@@ -400,6 +378,8 @@ short ranking(short a,short b,short c,short d,short e, short &hi1){
     for(e;e>13;e-=13);
     //high card for flush
     if(value==6) hi1=e;
+    //high card for pair
+    hi1=e;
     //pair = 2
     if(a==b||a==c||a==d) value=2,hi1=a;
     if(a==e)value=2,hi1=a;
@@ -452,9 +432,9 @@ short ranking(short a,short b,short c,short d,short e, short &hi1){
     return value;//return hand value
 }
 //*********************************************//
-//*             Computer Hand                 *//
+//*             Short Hand Rank               *//
 //*********************************************//
-string aiRank(short a){
+string sRank(short a){
     string state;//declare string for hand type
     if(a==1)state="High card";//if 1 then high card
     if(a==2)state="Pair";//if 2 then pair
@@ -527,73 +507,21 @@ void hiCard(short &a,short &b,short &c,short &d,short &e){
 //*********************************************//
 //*               Winning Hand                *//
 //*********************************************//
-short winHand(short a,short b,short c,short d,short h1,short h2,short h3,short h4){
+short winHand(short a,short b,short h1,short h2){
     //find top hand value
-    short topHand=a,pl1=0,pl2=0,pl3=0,pl4=0,win;//declare variables for ties
+    short topHand=a,pl1=0,pl2=0,win;//declare variables for ties
     if(b>topHand) topHand=b;
-    if(c>topHand) topHand=c;
-    if(d>topHand) topHand=d;
     //find all that have the same value of the top hand
     if(a==topHand) pl1=1;
     if(b==topHand) pl2=1;
-    if(c==topHand) pl3=1;
-    if(d==topHand) pl4=1;
     //compare ties for top hand
     if((pl1==1)&&(pl2==1)){//if two have tie
         if(h1>h2) win=1;//win =1
         if(h2>h1) win=2;//win =2
     }
-    if((pl1==1)&&(pl3==1)){
-        if(h1>h3) win=1;
-        if(h3>h1) win=3;
-    }
-    if((pl1==1)&&(pl4==1)){
-        if(h1>h4) win=1;
-        if(h4>h1) win=4;
-    }
-    if((pl2==1)&&(pl3==1)){
-        if(h2>h3) win=2;
-        if(h3>h2) win=3;
-    }
-    if((pl2==1)&&(pl4==1)){
-        if(h2>h4) win=2;
-        if(h4>h2) win=4;
-    }
-    if((pl3==1)&&(pl4==1)){
-        if(h3>h4) win=3;
-        if(h4>h3) win=4;
-    }
-    if((pl1==1)&&(pl2==1)&&(pl3==1)){//if 3 have tie
-        if(h1>h2&&h1>h3) win=1;//win 1
-        if(h2>h1&&h2>h3) win=2;//win 2
-        if(h3>h1&&h3>h2) win=3;//win 3
-    }
-    if((pl1==1)&&(pl3==1)&&(pl4==1)){
-        if(h1>h4&&h1>h3) win=1;
-        if(h4>h1&&h4>h3) win=4;
-        if(h3>h1&&h3>h4) win=3;
-    }
-    if((pl1==1)&&(pl2==1)&&(pl4==1)){
-        if(h1>h2&&h1>h4) win=1;
-        if(h2>h1&&h2>h4) win=2;
-        if(h4>h1&&h4>h2) win=4;
-    }
-    if((pl3==1)&&(pl2==1)&&(pl4==1)){
-        if(h3>h2&&h3>h4) win=3;
-        if(h2>h3&&h2>h4) win=2;
-        if(h4>h3&&h4>h2) win=4;
-    }
-    if((pl1==1)&&(pl2==1)&&(pl3==1)&&(pl4==1)){//if 4 tie
-        if(h1>h2&&h1>h3&&h1>h4) win=1;//win 1
-        if(h2>h1&&h2>h3&&h2>h4) win=2;//win 2
-        if(h3>h2&&h3>h1&&h3>h4) win=3;//win 3
-        if(h4>h2&&h4>h3&&h4>h1) win=4;//win 4
-    }
     //if no tie
-    if((pl1==1)&&(pl2==0)&&(pl3==0)&&(pl4==0)) win=1;//win 1
-    if((pl1==0)&&(pl2==1)&&(pl3==0)&&(pl4==0)) win=2;//win 2
-    if((pl1==0)&&(pl2==0)&&(pl3==1)&&(pl4==0)) win=3;//win 3
-    if((pl1==0)&&(pl2==0)&&(pl3==0)&&(pl4==1)) win=4;//win 4
+    if((pl1==1)&&(pl2==0)) win=1;//win 1
+    if((pl1==0)&&(pl2==1)) win=2;//win 2
     //return win
     return win;
 }
@@ -603,9 +531,7 @@ short winHand(short a,short b,short c,short d,short h1,short h2,short h3,short h
 string winner(string you,short a){
     string winner;//declare string variable for winner
     if(a==1) winner=you;//if 1 then winner = user
-    if(a==2) winner="Tom";//if 2 then winner = tom
-    if(a==3) winner="Howard";//if 3 then winner = howard
-    if(a==4) winner="Phil";// if 4 then winner = phil
-    if(a<1||a>4) winner="(Tie Game) No one";// else tie game
+    if(a==2) winner="Phil";//if 2 then winner = tom
+    if(a<1||a>2) winner="(Tie Game) No one";// else tie game
     return winner;//return winner
 }

@@ -18,22 +18,28 @@ bool anteUp(short &, short &, short &, short &, short &);
 bool indAnte(short &,short &);
 void worth(short,short,short,short,short);
 void allBet(short &, short &, short &, short &, short &,short);
+void award(short &,short);
 //Execution Begins Here!
 int main(int argc, char** argv) {
     //Declare Variables
-    short pl1M=50,pl2M=50,pl3M=50,pl4M=50,pot=0,button=1;
-    bool skip=false;
+    short pl1M=50,pl2M=50,pl3M=50,pl4M=50;//player money
+    short pot=0,button=1;//pot total and dealer button
+    //bool skip=false;//skip if there is all in at ante
     //display totals
     worth(pl1M,pl2M,pl3M,pl4M,pot);
     //call antes
-    skip=anteUp(pl1M,pl2M,pl3M,pl4M,pot);
+    //skip=anteUp(pl1M,pl2M,pl3M,pl4M,pot);
     //display totals
     worth(pl1M,pl2M,pl3M,pl4M,pot);
-    if(skip==false){
-        //bet round
-        allBet(pl1M,pl2M,pl3M,pl4M,pot,button);
-    }
+    //cards are dealt
+    //hand is shown to player
+    //call betting round
+    //if(!skip){
+    allBet(pl1M,pl2M,pl3M,pl4M,pot,button);
+    //}
+    //find winner
     //award pot to winner
+    award(pl1M,pot);
     //display totals
     return 0;
 }
@@ -68,14 +74,19 @@ bool indAnte(short &a, short &p){
 }
 //all bet
 void allBet(short &p1,short &p2,short &p3,short &p4,short &p5,short dButton){
+    //declare variables
     short plFold=0,ai1Fold=0,ai2Fold=0,ai3Fold=0;
-    bool check=true;
+    short gun;
+    //check for busted players
     if(p1==0) plFold=1;
     if(p2==0) ai1Fold=1;
     if(p3==0) ai2Fold=1;
     if(p4==0) ai3Fold=1;
+    //find who goes first
+    gun=dButton;
     
-    do{
-      //next bet
-    }while(check==false);
+}
+//reward pot to winner
+void award(short &w,short pot){
+    w+=pot;
 }
