@@ -17,11 +17,11 @@ using namespace std;
 bool anteUp(short &, short &, short &, short &, short &);
 bool indAnte(short &,short &);
 void worth(short,short,short,short,short);
-void allBet(short &, short &, short &, short &, short &);
+void allBet(short &, short &, short &, short &, short &,short);
 //Execution Begins Here!
 int main(int argc, char** argv) {
     //Declare Variables
-    short pl1M=50,pl2M=50,pl3M=50,pl4M=50,pot=0;
+    short pl1M=50,pl2M=50,pl3M=50,pl4M=50,pot=0,button=1;
     bool skip=false;
     //display totals
     worth(pl1M,pl2M,pl3M,pl4M,pot);
@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
     worth(pl1M,pl2M,pl3M,pl4M,pot);
     if(skip==false){
         //bet round
-        allBet(pl1M,pl2M,pl3M,pl4M,pot);
+        allBet(pl1M,pl2M,pl3M,pl4M,pot,button);
     }
     //award pot to winner
     //display totals
