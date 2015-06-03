@@ -2,6 +2,7 @@
  * File:   main.cpp
  * Author: Branden Hitt
  * Created on May 6, 2015, 1:02 PM
+ * Notes for next update: work on high card then betting
  *      Purpose: Head's Up Texas Holdem
  */
 
@@ -27,8 +28,11 @@ short ranking(short ,short ,short ,short ,short,short &);//gives hand value
 string sRank(short); //finds a short string rank of hand
 string cardVal(short);//finds what the card is for output
 void hiCard(short &,short &,short &,short &,short &);//sort for high card
-short winHand(short,short,short,short);//find winning hand
+short bestCom(short,short,short,short,short,short,short);//find best version of your hand
+void finCom(short &,short &,short &,short &,short &,short,short,short,short,short,short,short,short);//set hand with best combination
+short winHand(short,short,short,short);//find winning hand between two players
 string winner(string,short);//find round winner
+
 //Execution Begins Here!
 int main(int argc, char** argv) {
     //Declare Variables
@@ -208,19 +212,24 @@ void iniDeck(short cards[],short n){
 //*********************************************//
 short round(string z,short x[]){
     //Declare variables
-    short c1=0,c2=0,c3=0,c4=0,c5=0;//player hole cards
-    short usrHand,ai1Hand,ai2Hand,ai3Hand;//hand values
-    short ai1c1=0,ai1c2=0,ai1c3=0,ai1c4=0,ai1c5=0;//computer hole cards
+    short c1=0,c2=0;//player hole cards
+    short ai1c1=0,ai1c2=0;//computer hole cards
     short com1,com2,com3,com4,com5;//community cards
+    short playCom, aiCom;//number for combination of hand
+    short pf1=0,pf2=0,pf3=0,pf4=0,pf5=0;//player final hand cards 1-5
+    short cf1=0,cf2=0,cf3=0,cf4=0,cf5=0;//computer final hand cards 1-5
+    short usrHand,ai1Hand;//hand values
     short hc=0,ai1hc=0;//high card for tie hands
     short winNum;//player number who has top hand
     string plR,ai1R; //quick string for hand ranking
     cout<<"*************************"<<endl;
-    //Deal individual hands
+    //Deal hole cards
     deal1(c1,x);
     deal1(c2,x);
     deal1(ai1c1,x);
     deal1(ai1c2,x);
+    //display hole cards
+    cout<<"Your Hole Cards: "<<cardVal(c1)<<"|"<<cardVal(c2)<<endl;
     //Deal 3 Community Cards (Flop)
     deal1(com1,x);
     deal1(com2,x);
@@ -229,18 +238,27 @@ short round(string z,short x[]){
     deal1(com4,x);
     //Deal 1 Community Card (River)
     deal1(com5,x);
+    //display community cards
+    cout<<"Community Cards: "<<cardVal(com1)<<"|"<<cardVal(com2)<<"|"<<cardVal(com3)<<
+                "|"<<cardVal(com4)<<"|"<<cardVal(com5)<<endl;
+    //find best combination of cards per player
+    playCom=bestCom(com1,com2,com3,com4,com5,c1,c2);
+    aiCom=bestCom(com1,com2,com3,com4,com5,ai1c1,ai1c2);
+    //set final hand to best combination
+    finCom(pf1,pf2,pf3,pf4,pf5,com1,com2,com3,com4,com5,c1,c2,playCom);
+    finCom(cf1,cf2,cf3,cf4,cf5,com1,com2,com3,com4,com5,ai1c1,ai1c2,aiCom);
     //high card and sort
-    hiCard(c1,c2,c3,c4,c5);
-    hiCard(ai1c1,ai1c2,ai1c3,ai1c4,ai1c5);
+    hiCard(pf1,pf2,pf3,pf4,pf5);
+    hiCard(cf1,cf2,cf3,cf4,cf5);
     //find hand value of player
-    usrHand=ranking(c1,c2,c3,c4,c5,hc);
+    usrHand=ranking(pf1,pf2,pf3,pf4,pf5,hc);
     //find hand value of computer
-    ai1Hand=ranking(ai1c1,ai1c2,ai1c3,ai1c4,ai1c5,ai1hc);
+    ai1Hand=ranking(cf1,cf2,cf3,cf4,cf5,ai1hc);
     //set string for short hand ranking
     plR=sRank(usrHand);
     ai1R=sRank(ai1Hand);
     //state player hand value
-    if(usrHand==1)cout<<"Your hand value is low with just a high card ("<<cardVal(c5)<<")."<<endl;
+    if(usrHand==1)cout<<"Your hand value is low with just a high card ("<<cardVal(pf5)<<")."<<endl;
     if(usrHand==2)cout<<"Your hand value is average with just a pair."<<endl;
     if(usrHand==3)cout<<"You have two pair."<<endl;
     if(usrHand==4)cout<<"You have three of a kind. Not too bad."<<endl;
@@ -250,18 +268,19 @@ short round(string z,short x[]){
     if(usrHand==8)cout<<"Four of a Kind! Quick, don't let them see your excitement."<<endl;
     if(usrHand==9)cout<<"A Straight Flush! You can't be beat!"<<endl;
     //Display player hand
-    cout<<"Your Hand: "<<cardVal(c1)<<"|"<<cardVal(c2)<<"|"<<cardVal(c3)<<
-                "|"<<cardVal(c4)<<"|"<<cardVal(c5)<<endl;
+    cout<<"Your Hand: "<<cardVal(pf1)<<"|"<<cardVal(pf2)<<"|"<<cardVal(pf3)<<
+                "|"<<cardVal(pf4)<<"|"<<cardVal(pf5)<<endl;
     cout<<"Please hit enter twice to start betting:"<<endl;
     cin.get();
     cin.ignore();
     //Unveil all hands
     cout<<"*************************"<<endl;
     cout<<"               All Player Hands     "<<endl;
-    cout<<"Your Hand: "<<cardVal(c1)<<"|"<<cardVal(c2)<<"|"<<cardVal(c3)<<
-                "|"<<cardVal(c4)<<"|"<<cardVal(c5)<<"  ("<<plR<<")"<<endl;
-    cout<<"Phil's Hand: "<<cardVal(ai1c1)<<"|"<<cardVal(ai1c2)<<"|"<<cardVal(ai1c3)<<
-                "|"<<cardVal(ai1c4)<<"|"<<cardVal(ai1c5)<<"  ("<<ai1R<<")"<<endl;
+    cout<<"Your Hand: "<<cardVal(pf1)<<"|"<<cardVal(pf2)<<"|"<<cardVal(pf3)<<
+                "|"<<cardVal(pf4)<<"|"<<cardVal(pf5)<<"  ("<<plR<<")"<<endl;
+    cout<<"Phil's Hole Cards: "<<cardVal(ai1c1)<<"|"<<cardVal(ai1c2)<<endl;
+    cout<<"Phil's Hand: "<<cardVal(cf1)<<"|"<<cardVal(cf2)<<"|"<<cardVal(cf3)<<
+                "|"<<cardVal(cf4)<<"|"<<cardVal(cf5)<<"  ("<<ai1R<<")"<<endl;
     cout<<"Please hit enter twice to find the winning hand:"<<endl;
     cin.get();
     cin.ignore();
@@ -503,6 +522,84 @@ void hiCard(short &a,short &b,short &c,short &d,short &e){
         temp=tempd,tempd=tempe,tempe=temp;
         temp=d,d=e,e=temp;//swap if needed
     }
+}
+//*********************************************//
+//*            Best Combination               *//
+//*********************************************//
+short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
+    //variables
+    short high,temp, placeH,bestCom=0;//high,temporary,placeholder,best combination number
+    high=ranking(a,b,c,d,e,placeH);//5 community cards
+    //3 com cards and 2 hole
+    temp=ranking(h1,h2,a,b,c,placeH);
+    if(temp>high) bestCom=1, high=temp;
+    temp=ranking(h1,h2,a,c,d,placeH);
+    if(temp>high) bestCom=2, high=temp;
+    temp=ranking(h1,h2,a,d,e,placeH);
+    if(temp>high) bestCom=3, high=temp;
+    temp=ranking(h1,h2,a,b,d,placeH);
+    if(temp>high) bestCom=4, high=temp;
+    temp=ranking(h1,h2,a,b,e,placeH);
+    if(temp>high) bestCom=5, high=temp;
+    temp=ranking(h1,h2,a,c,e,placeH);
+    if(temp>high) bestCom=6, high=temp;
+    temp=ranking(h1,h2,b,c,d,placeH);
+    if(temp>high) bestCom=7, high=temp;
+    temp=ranking(h1,h2,b,c,e,placeH);
+    if(temp>high) bestCom=8, high=temp;
+    temp=ranking(h1,h2,b,d,e,placeH);
+    if(temp>high) bestCom=9, high=temp;
+    temp=ranking(h1,h2,c,d,e,placeH);
+    if(temp>high) bestCom=10, high=temp;
+    //4 com card and first hole card
+    temp=ranking(h1,a,b,c,d,placeH);
+    if(temp>high) bestCom=11, high=temp;
+    temp=ranking(h1,a,b,c,e,placeH);
+    if(temp>high) bestCom=12, high=temp;
+    temp=ranking(h1,a,c,d,e,placeH);
+    if(temp>high) bestCom=13, high=temp;
+    temp=ranking(h1,a,b,d,e,placeH);
+    if(temp>high) bestCom=14, high=temp;
+    temp=ranking(h1,b,c,d,e,placeH);
+    if(temp>high) bestCom=15, high=temp;
+    //4 com card and second hole card
+    temp=ranking(h2,a,b,c,d,placeH);
+    if(temp>high) bestCom=16, high=temp;
+    temp=ranking(h2,a,b,c,e,placeH);
+    if(temp>high) bestCom=17, high=temp;
+    temp=ranking(h2,a,c,d,e,placeH);
+    if(temp>high) bestCom=18, high=temp;
+    temp=ranking(h2,a,b,d,e,placeH);
+    if(temp>high) bestCom=19, high=temp;
+    temp=ranking(h2,b,c,d,e,placeH);
+    if(temp>high) bestCom=20, high=temp;
+    return bestCom;
+}
+//*********************************************//
+//*               Set Final Hand              *//
+//*********************************************//
+void finCom(short &c1,short &c2,short &c3, short &c4,short &c5,short a,short b,short c,short d,short e,short h1,short h2,short comb){
+    if(comb==0) c1=a,c2=b,c3=c,c4=d,c5=e;
+    if(comb==1) c1=h1,c2=h2,c3=a,c4=b,c5=c;
+    if(comb==2) c1=h1,c2=h2,c3=a,c4=c,c5=d;
+    if(comb==3) c1=h1,c2=h2,c3=a,c4=d,c5=e;
+    if(comb==4) c1=h1,c2=h2,c3=a,c4=b,c5=d;
+    if(comb==5) c1=h1,c2=h2,c3=a,c4=b,c5=e;
+    if(comb==6) c1=h1,c2=h2,c3=a,c4=c,c5=e;
+    if(comb==7) c1=h1,c2=h2,c3=b,c4=c,c5=d;
+    if(comb==8) c1=h1,c2=h2,c3=b,c4=c,c5=e;
+    if(comb==9) c1=h1,c2=h2,c3=b,c4=d,c5=e;
+    if(comb==10) c1=h1,c2=h2,c3=c,c4=d,c5=e;
+    if(comb==11) c1=h1,c2=a,c3=b,c4=c,c5=d;
+    if(comb==12) c1=h1,c2=a,c3=b,c4=c,c5=e;
+    if(comb==13) c1=h1,c2=a,c3=c,c4=d,c5=e;
+    if(comb==14) c1=h1,c2=a,c3=b,c4=d,c5=e;
+    if(comb==15) c1=h1,c2=b,c3=c,c4=d,c5=e;
+    if(comb==16) c1=h2,c2=a,c3=b,c4=c,c5=d;
+    if(comb==17) c1=h2,c2=a,c3=b,c4=c,c5=e;
+    if(comb==18) c1=h2,c2=a,c3=c,c4=d,c5=e;
+    if(comb==19) c1=h2,c2=a,c3=b,c4=d,c5=e;
+    if(comb==20) c1=h2,c2=b,c3=c,c4=d,c5=e;
 }
 //*********************************************//
 //*               Winning Hand                *//
