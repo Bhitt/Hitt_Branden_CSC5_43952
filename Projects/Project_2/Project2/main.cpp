@@ -2,7 +2,7 @@
  * File:   main.cpp
  * Author: Branden Hitt
  * Created on May 6, 2015, 1:02 PM
- * Notes for next update: work on high card then betting
+ * Notes for next update: work on betting
  *      Purpose: Head's Up Texas Holdem
  */
 
@@ -24,13 +24,13 @@ void rules();//instructions on how to play
 void iniDeck(short [],short);//initializes and shuffles the deck
 short round(string ,short []);//starts a new round of poker
 void deal1(short &,short []);//deal 1 card
-short ranking(short ,short ,short ,short ,short,short &);//gives hand value
+short ranking(short ,short ,short ,short ,short,short &,short &);//gives hand value
 string sRank(short); //finds a short string rank of hand
 string cardVal(short);//finds what the card is for output
 void hiCard(short &,short &,short &,short &,short &);//sort for high card
 short bestCom(short,short,short,short,short,short,short);//find best version of your hand
 void finCom(short &,short &,short &,short &,short &,short,short,short,short,short,short,short,short);//set hand with best combination
-short winHand(short,short,short,short);//find winning hand between two players
+short winHand(short,short,short,short,short,short);//find winning hand between two players
 string winner(string,short);//find round winner
 
 //Execution Begins Here!
@@ -66,6 +66,8 @@ int main(int argc, char** argv) {
     cout<<"*************************"<<endl;
     cout<<"Now that you are seated, why don't you meet your opponent."<<endl;
     cout<<"Across from you is poker legend, Phil Hellmuth."<<endl;
+    cout<<"Phil is a 13 time World Series of Poker Champion with"<<endl;
+    cout<<"$18,282,014 in winnings!"<<endl;
     cout<<"Please hit enter twice to continue"<<endl;
     cin.get();
     cin.ignore();
@@ -112,11 +114,44 @@ void rules(){
     bool skip=false;//bool for skip 
     cout<<"*************************"<<endl;
     cout<<"How to Play:"<<endl;//begin explanation of how to play
-    cout<<"Each player is dealt 2 cards from a standard 52-card deck."<<endl;
-    cout<<"Then each player will have a chance to bet."<<endl;
-    cout<<"From there, 3 community cards will be dealt to the center."<<endl;
-    cout<<"(Community cards will be used in combination with any of your hole cards"<<endl;
+    cout<<"Step1:"<<endl;
+    cout<<"First both players pay an ante (forced $5 bet to join the round)"<<endl;
+    cout<<"Each player is dealt 2 cards (hole cards) from a standard 52-card deck."<<endl;
+    cout<<"Then each player will have a chance to bet/fold."<<endl;
+    cout<<"Note that a player may fold at any time during the game but will lose the pot."<<endl;
+    cout<<"*************************"<<endl;
+    cout<<"Please hit enter to continue"<<endl;
+    cin.get();
+    cin.ignore();
+    cout<<"*************************"<<endl;
+    cout<<"Step 2:"<<endl;
+    cout<<"From there, 3 community cards will be dealt to the center called the flop."<<endl;
+    cout<<"(Community cards will be used in combination with/without any of your hole cards"<<endl;
     cout<<"to determine your final hand)"<<endl;
+    cout<<"Again, there will be a round of betting"<<endl;
+    cout<<"*************************"<<endl;
+    cout<<"Please hit enter to continue"<<endl;
+    cin.get();
+    cin.ignore();
+    cout<<"*************************"<<endl;
+    cout<<"Step 3:"<<endl;
+    cout<<"Next, 1 more community card will be dealt called the turn."<<endl;
+    cout<<"Another round of betting."<<endl;
+    cout<<"*************************"<<endl;
+    cout<<"Please hit enter to continue"<<endl;
+    cin.get();
+    cin.ignore();
+    cout<<"*************************"<<endl;
+    cout<<"Step 4:"<<endl;
+    cout<<"Finally, 1 final community card will be dealt to the center called the river."<<endl;
+    cout<<"Now that all 5 community cards are on the table, you can use any combination of them"<<endl;
+    cout<<"with/without your hole cards to get the best hand you can."<<endl;
+    cout<<"There is one final round of betting."<<endl;
+    cout<<"*************************"<<endl;
+    cout<<"Please hit enter to continue"<<endl;
+    cin.get();
+    cin.ignore();
+    cout<<"*************************"<<endl;
     cout<<"Whoever has the best combination of cards based on rankings will win the round/pot."<<endl;
     cout<<"The more rare the hand, the higher the ranking will be."<<endl;
     cout<<"The worst hand is nothing special with just a High Card, while the best is a Royal Flush."<<endl;
@@ -219,7 +254,7 @@ short round(string z,short x[]){
     short pf1=0,pf2=0,pf3=0,pf4=0,pf5=0;//player final hand cards 1-5
     short cf1=0,cf2=0,cf3=0,cf4=0,cf5=0;//computer final hand cards 1-5
     short usrHand,ai1Hand;//hand values
-    short hc=0,ai1hc=0;//high card for tie hands
+    short hc=0,hc2=0,ai1hc=0,ai1hc2=0;//high card for tie hands
     short winNum;//player number who has top hand
     string plR,ai1R; //quick string for hand ranking
     cout<<"*************************"<<endl;
@@ -251,9 +286,9 @@ short round(string z,short x[]){
     hiCard(pf1,pf2,pf3,pf4,pf5);
     hiCard(cf1,cf2,cf3,cf4,cf5);
     //find hand value of player
-    usrHand=ranking(pf1,pf2,pf3,pf4,pf5,hc);
+    usrHand=ranking(pf1,pf2,pf3,pf4,pf5,hc,hc2);
     //find hand value of computer
-    ai1Hand=ranking(cf1,cf2,cf3,cf4,cf5,ai1hc);
+    ai1Hand=ranking(cf1,cf2,cf3,cf4,cf5,ai1hc,ai1hc2);
     //set string for short hand ranking
     plR=sRank(usrHand);
     ai1R=sRank(ai1Hand);
@@ -286,7 +321,7 @@ short round(string z,short x[]){
     cin.ignore();
     cout<<"*************************"<<endl;
     //find winning hand
-    winNum=winHand(usrHand,ai1Hand,hc,ai1hc);//find winNum
+    winNum=winHand(usrHand,ai1Hand,hc,ai1hc,hc2,ai1hc2);//find winNum
     string rndWinr=winner(z,winNum);//find winner name
     cout<<rndWinr<<" has the winning hand. "<<endl;//state winner
     cout<<"Please hit enter twice to continue:"<<endl;
@@ -379,7 +414,7 @@ string cardVal(short v){
 //*********************************************//
 //*             Hand Ranking                  *//
 //*********************************************//
-short ranking(short a,short b,short c,short d,short e, short &hi1){
+short ranking(short a,short b,short c,short d,short e, short &hi1, short &hi2){
     //declare variables
     //high card hand value= 1
     short value=1,temp;//temp
@@ -395,30 +430,6 @@ short ranking(short a,short b,short c,short d,short e, short &hi1){
     for(c;c>13;c-=13);
     for(d;d>13;d-=13);
     for(e;e>13;e-=13);
-    //high card for flush
-    if(value==6) hi1=e;
-    //high card for pair
-    hi1=e;
-    //pair = 2
-    if(a==b||a==c||a==d) value=2,hi1=a;
-    if(a==e)value=2,hi1=a;
-    if(b==c||b==d) value=2,hi1=b;
-    if(c==d) value=2,hi1=c;
-    if(c==e) value=2,hi1=c;
-    if(d==e) value=2,hi1=e;
-    if(b==e) value=2,hi1=e;
-    //two pair = 3
-    if((b==c&&d==e)||(b==d&&c==e)||(b==e&&c==d)) value=3,hi1=b;
-    if((a==c&&d==e)||(a==e&&c==d)||(a==d&&c==e)) value=3,hi1=a;
-    if((a==b&&d==e)||(a==e&&b==d)||(a==d&&b==e)) value=3,hi1=a;
-    if((a==b&&c==e)||(a==e&&b==c)||(a==c&&b==e)) value=3,hi1=a;
-    if((a==b&&c==d)||(a==c&&b==d)||(a==d&&b==c)) value=3,hi1=a;
-    //three of a kind = 4
-    if((a==d&&a==e)||(a==b&&a==e)||(a==b&&a==c)) value=4,hi1=a;
-    if((c==d&&c==e)||(b==d&&b==e)) value=4,hi1=e;
-    if((a==c&&a==e)||(a==b&&a==d)) value=4,hi1=a;
-    if((b==c&&b==e)||(a==c&&a==d)) value=4,hi1=c;
-    if(b==c&&b==d) value=4,hi1=b;
     //sort for straight
         //sort first value
         if(a>b) temp=a,a=b,b=temp;
@@ -434,18 +445,47 @@ short ranking(short a,short b,short c,short d,short e, short &hi1){
         if(c>e) temp=c,c=e,e=temp;
         //sort fourth value
         if(d>e) temp=d,d=e,e=temp;
+    //high card for flush
+    if(value==6) hi1=e,hi2=d;
+    //high card for high card hand
+    if(value==1)hi1=e,hi2=d;
+    //pair = 2
+    if(a==b||a==c||a==d) value=2,hi1=a,hi2=e;
+    if(a==e)value=2,hi1=a,hi2=d;
+    if(b==c||b==d) value=2,hi1=b,hi2=e;
+    if(c==d) value=2,hi1=c,hi2=e;
+    if(c==e) value=2,hi1=c,hi2=d;
+    if(d==e) value=2,hi1=e,hi2=c;
+    if(b==e) value=2,hi1=e,hi2=d;
+    //two pair = 3
+    if((b==c&&d==e)||(b==e&&c==d)) value=3,hi1=d,hi2=b;
+    if((b==d&&c==e)||(a==c&&b==e)) value=3, hi1=c, hi2=e;
+    if((a==e&&c==d)||(a==d&&c==e)) value=3,hi1=c,hi2=a;
+    if((a==c&&d==e)||(a==e&&b==d)) value=3, hi1=d, hi2=a;
+    if((a==b&&d==e)||(a==d&&b==e)) value=3,hi1=e, hi2=a;
+    if((a==b&&c==e)||(a==e&&b==c)) value=3,hi1=c,hi2=a;
+    if((a==b&&c==d)||(a==c&&b==d)) value=3,hi1=d,hi2=a;
+    if((a==d&&b==c)) value=3, hi1=c,hi2=a;
+    //three of a kind = 4
+    if((a==d&&a==e)) value=4,hi1=a,hi2=c;
+    if((a==b&&a==e)||(a==c&&a==e)) value=4, hi1=a, hi2=d;
+    if((a==b&&a==c)||(a==b&&a==d)||(a==c&&a==d)) value=4, hi1=a,hi2=e;
+    if((c==d&&c==e)) value=4,hi1=e, hi2=b;
+    if((b==d&&b==e)) value=4, hi1=e, hi2=c;
+    if((b==c&&b==e)) value=4,hi1=c, hi2=d;
+    if(b==c&&b==d) value=4,hi1=b,hi2=e;
     //straight = 5
-    if((e-d==1)&&(d-c==1)&&(c-b==1)&&(b-a==1)) value=5,str='Y',hi1=e;
-    if((a==1)&&(b==2)&&(c==3)&&(d==4)&&(e==13)) value=5,str='Y',hi1=e;
+    if((e-d==1)&&(d-c==1)&&(c-b==1)&&(b-a==1)) value=5,str='Y',hi1=e,hi2=d;
+    if((a==1)&&(b==2)&&(c==3)&&(d==4)&&(e==13)) value=5,str='Y',hi1=e,hi2=d;
     //full house = 7
-    if((c==d&&c==e&&a==b)||(a==d&&a==e&&b==c)) value=7,hi1=d;
-    if((a==b&&a==e&&c==d)||(a==b&&a==c&&d==e)) value=7,hi1=a;
-    if((a==c&&a==e&&b==d)||(a==b&&a==d&&c==e)) value=7,hi1=a;
-    if((b==d&&b==e&&a==c)||(b==c&&b==d&&a==e)) value=7,hi1=b;
-    if((b==c&&b==e&&a==d)||(a==c&&a==d&&b==e)) value=7,hi1=c;
+    if((c==d&&c==e&&a==b)||(a==d&&a==e&&b==c)) value=7,hi1=d,hi2=b;
+    if((a==b&&a==e&&c==d)||(a==b&&a==c&&d==e)) value=7,hi1=a,hi2=d;
+    if((a==c&&a==e&&b==d)||(b==c&&b==e&&a==d)) value=7,hi1=c,hi2=d;
+    if((a==b&&a==d&&c==e)||(a==c&&a==d&&b==e)) value=7, hi1=a, hi2=e;
+    if((b==d&&b==e&&a==c)||(b==c&&b==d&&a==e)) value=7,hi1=b,hi2=a;
     //four of a kind = 8
-    if((b==c&&d==e&&c==d)||(a==c&&d==e&&c==d)||(a==b&&d==e&&b==d)) value=8,hi1=d;
-    if((a==b&&c==e&&b==c)||(a==b&&c==d&&b==c)) value=8,hi1=a;
+    if((b==c&&d==e&&c==d)||(a==c&&d==e&&c==d)||(a==b&&d==e&&b==d)) value=8,hi1=d,hi2=d;
+    if((a==b&&c==e&&b==c)||(a==b&&c==d&&b==c)) value=8,hi1=a,hi2=d;
     //straight flush = 9
     if(flu=='Y'&&str=='Y') value=9;// if flush and straight then value =9
     return value;//return hand value
@@ -528,51 +568,171 @@ void hiCard(short &a,short &b,short &c,short &d,short &e){
 //*********************************************//
 short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     //variables
-    short high,temp, placeH,bestCom=0;//high,temporary,placeholder,best combination number
-    high=ranking(a,b,c,d,e,placeH);//5 community cards
+    short high,temp, placeH,placeH2,bestCom=0,curHC=0,curHC2;//high,temporary,placeholder,best combination number,current High Card
+    high=ranking(a,b,c,d,e,curHC,curHC2);//5 community cards
     //3 com cards and 2 hole
-    temp=ranking(h1,h2,a,b,c,placeH);
+    temp=ranking(h1,h2,a,b,c,placeH,placeH2);
     if(temp>high) bestCom=1, high=temp;
-    temp=ranking(h1,h2,a,c,d,placeH);
+    if(temp==high){
+        if(placeH>curHC)bestCom=1,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=1,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
+    temp=ranking(h1,h2,a,c,d,placeH,placeH2);
     if(temp>high) bestCom=2, high=temp;
-    temp=ranking(h1,h2,a,d,e,placeH);
+    if(temp==high){
+        if(placeH>curHC)bestCom=2,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=2,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
+    temp=ranking(h1,h2,a,d,e,placeH,placeH2);
     if(temp>high) bestCom=3, high=temp;
-    temp=ranking(h1,h2,a,b,d,placeH);
+    if(temp==high){
+        if(placeH>curHC)bestCom=3,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=3,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
+    temp=ranking(h1,h2,a,b,d,placeH,placeH2);
     if(temp>high) bestCom=4, high=temp;
-    temp=ranking(h1,h2,a,b,e,placeH);
+    if(temp==high){
+        if(placeH>curHC)bestCom=4,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=4,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
+    temp=ranking(h1,h2,a,b,e,placeH,placeH2);
     if(temp>high) bestCom=5, high=temp;
-    temp=ranking(h1,h2,a,c,e,placeH);
+    if(temp==high){
+        if(placeH>curHC)bestCom=5,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=5,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
+    temp=ranking(h1,h2,a,c,e,placeH,placeH2);
     if(temp>high) bestCom=6, high=temp;
-    temp=ranking(h1,h2,b,c,d,placeH);
+    if(temp==high){
+        if(placeH>curHC)bestCom=6,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=6,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
+    temp=ranking(h1,h2,b,c,d,placeH,placeH2);
     if(temp>high) bestCom=7, high=temp;
-    temp=ranking(h1,h2,b,c,e,placeH);
+    if(temp==high){
+        if(placeH>curHC)bestCom=7,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=7,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
+    temp=ranking(h1,h2,b,c,e,placeH,placeH2);
     if(temp>high) bestCom=8, high=temp;
-    temp=ranking(h1,h2,b,d,e,placeH);
+    if(temp==high){
+        if(placeH>curHC)bestCom=8,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=8,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
+    temp=ranking(h1,h2,b,d,e,placeH,placeH2);
     if(temp>high) bestCom=9, high=temp;
-    temp=ranking(h1,h2,c,d,e,placeH);
+    if(temp==high){
+        if(placeH>curHC)bestCom=9,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=9,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
+    temp=ranking(h1,h2,c,d,e,placeH,placeH2);
     if(temp>high) bestCom=10, high=temp;
+    if(temp==high){
+        if(placeH>curHC)bestCom=10,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=10,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
     //4 com card and first hole card
-    temp=ranking(h1,a,b,c,d,placeH);
+    temp=ranking(h1,a,b,c,d,placeH,placeH2);
     if(temp>high) bestCom=11, high=temp;
-    temp=ranking(h1,a,b,c,e,placeH);
+    if(temp==high){
+        if(placeH>curHC)bestCom=11,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=11,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
+    temp=ranking(h1,a,b,c,e,placeH,placeH2);
     if(temp>high) bestCom=12, high=temp;
-    temp=ranking(h1,a,c,d,e,placeH);
+    if(temp==high){
+        if(placeH>curHC)bestCom=12,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=12,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
+    temp=ranking(h1,a,c,d,e,placeH,placeH2);
     if(temp>high) bestCom=13, high=temp;
-    temp=ranking(h1,a,b,d,e,placeH);
+    if(temp==high){
+        if(placeH>curHC)bestCom=13,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=13,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
+    temp=ranking(h1,a,b,d,e,placeH,placeH2);
     if(temp>high) bestCom=14, high=temp;
-    temp=ranking(h1,b,c,d,e,placeH);
+    if(temp==high){
+        if(placeH>curHC)bestCom=14,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=14,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
+    temp=ranking(h1,b,c,d,e,placeH,placeH2);
     if(temp>high) bestCom=15, high=temp;
+    if(temp==high){
+        if(placeH>curHC)bestCom=15,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=15,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
     //4 com card and second hole card
-    temp=ranking(h2,a,b,c,d,placeH);
+    temp=ranking(h2,a,b,c,d,placeH,placeH2);
     if(temp>high) bestCom=16, high=temp;
-    temp=ranking(h2,a,b,c,e,placeH);
+    if(temp==high){
+        if(placeH>curHC)bestCom=16,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=16,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
+    temp=ranking(h2,a,b,c,e,placeH,placeH2);
     if(temp>high) bestCom=17, high=temp;
-    temp=ranking(h2,a,c,d,e,placeH);
+    if(temp==high){
+        if(placeH>curHC)bestCom=17,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=17,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
+    temp=ranking(h2,a,c,d,e,placeH,placeH2);
     if(temp>high) bestCom=18, high=temp;
-    temp=ranking(h2,a,b,d,e,placeH);
+    if(temp==high){
+        if(placeH>curHC)bestCom=18,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=18,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
+    temp=ranking(h2,a,b,d,e,placeH,placeH2);
     if(temp>high) bestCom=19, high=temp;
-    temp=ranking(h2,b,c,d,e,placeH);
+    if(temp==high){
+        if(placeH>curHC)bestCom=19,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=19,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
+    temp=ranking(h2,b,c,d,e,placeH,placeH2);
     if(temp>high) bestCom=20, high=temp;
+    if(temp==high){
+        if(placeH>curHC)bestCom=20,high=temp,curHC=placeH;
+        if(placeH==curHC){
+            if(placeH2>curHC)bestCom=20,high=temp,curHC=placeH,curHC2=placeH2;
+        }
+    }
     return bestCom;
 }
 //*********************************************//
@@ -604,7 +764,7 @@ void finCom(short &c1,short &c2,short &c3, short &c4,short &c5,short a,short b,s
 //*********************************************//
 //*               Winning Hand                *//
 //*********************************************//
-short winHand(short a,short b,short h1,short h2){
+short winHand(short a,short b,short h1,short h2,short sh1, short sh2){
     //find top hand value
     short topHand=a,pl1=0,pl2=0,win;//declare variables for ties
     if(b>topHand) topHand=b;
@@ -615,6 +775,10 @@ short winHand(short a,short b,short h1,short h2){
     if((pl1==1)&&(pl2==1)){//if two have tie
         if(h1>h2) win=1;//win =1
         if(h2>h1) win=2;//win =2
+        if(h1==h2){
+            if(sh1>sh2) win=1;
+            if(sh2>sh1) win=2;
+        }
     }
     //if no tie
     if((pl1==1)&&(pl2==0)) win=1;//win 1
