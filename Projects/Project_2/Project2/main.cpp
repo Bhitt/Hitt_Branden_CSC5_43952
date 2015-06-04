@@ -3,7 +3,7 @@
  * Author: Branden Hitt
  * Created on May 6, 2015, 1:02 PM
  * Notes for next update: work on betting
- *      Purpose: Head's Up Texas Holdem
+ *      Purpose: Head's Up Texas Hold'em
  */
 
 //System Libraries
