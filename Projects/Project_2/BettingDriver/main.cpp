@@ -19,11 +19,11 @@ using namespace std;
 bool anteUp(short &, short &, short &);
 bool indAnte(short &,short &);
 void worth(short,short,short);
-bool bet(short &,short &, short &);
+bool bet(short &,short &, short &,bool);
 void award(short &,short);
-bool playBet(short &,short &,short &);
-bool compBet(short &,short &,short &);
-bool check(short,short,short,short,short);
+short playBet(short &,short &,short &,short &);
+short compBet(short &,short &,short &,short &);
+bool check(short,short,short);
 //Execution Begins Here!
 int main(int argc, char** argv) {
     srand(static_cast<unsigned int>(time(0)));//set random seed
@@ -40,9 +40,24 @@ int main(int argc, char** argv) {
     worth(pl1M,pl2M,pot);
     //2 cards are dealt
     //hand is shown to player
-    //call betting round
+    //call betting round 1
     if(!skip){
-    
+        skip=bet(pl1M,pl2M,pot,button);
+    }
+    //3 community cards are dealt and shown
+    //betting round 2
+    if(!skip){
+        skip=bet(pl1M,pl2M,pot,button);
+    }
+    //turn is dealt
+    //betting round 3
+    if(!skip){
+        skip=bet(pl1M,pl2M,pot,button);
+    }
+    //river dealt
+    //final betting round
+    if(!skip){
+        skip=bet(pl1M,pl2M,pot,button);
     }
     //find winner
     //award pot to winner
@@ -78,57 +93,67 @@ bool indAnte(short &a, short &p){
     return allIn;
 }
 //betting
-bool bet(short &pB,short &cB, short &pot, bool button){
-    bool check,allIn=false;
-    short tally=0;
-    short pB=0,cB=0,curBet=0;
+bool bet(short &pM,short &cM, short &pot,bool button){
+    //declare variables
+    bool stop;
+    short tally=0;//tally to make sure both players bet at least once
+    short pB=0,cB=0,curBet=0;//player/computer total bet and current bet
+    short allFold;
     do{
        if(button==true){
            //call player bet
-           allIn=playBet();
+           allFold=playBet(pM,pB,curBet,pot);
            tally++;
-           if(tally>1)check=check();
+           if(tally>1)stop=check(pB,cB,curBet);
        }
        //call computer bet
-       allIn=compBet();
+       allFold=compBet(cM,cB,curBet,pot);
        tally++;
-       if(tally>1)check=check();
+       if(tally>1)stop=check(pB,cB,curBet);
        if(button==false){
            //call player bet
-           allIn=playBet();
+           allFold=playBet(pM,pB,curBet,pot);
            tally++;
-           check=check();
+           stop=check(pB,cB,curBet);
        }
        //check for raises
-       check=check();
-    }while(check=false);
+       stop=check(pB,cB,curBet);
+    }while(stop==false);
     
-    return allIn;
+    return allFold;
 }
 //reward pot to winner
 void award(short &w,short pot){
     w+=pot;
 }
 //player bet
-bool playBet(short &pM,short &curBet,short &pot){
+short playBet(short &pM,short &pB,short &curBet,short &pot){
     //variables
     short cho;
     //display current bet
-    cout<<"The current bet is $"<<curBet;
+    cout<<"The current bet is $"<<curBet<<endl;
+    cout<<"pot= $"<<pot<<endl;
     //prompt for bet
-    cout<<"Enter in 1-call/check  :"<<endl;
-    cout<<"         2-raise/bet $5:"<<endl;
-    cout<<"         3-fold        :"<<endl;
+    cout<<"Enter in 1-call/check $"<<curBet<<":"<<endl;
+    cout<<"         2-raise/bet $5 :"<<endl;
+    cout<<"         3-fold         :"<<endl;
     cin>>cho;
-    if(cho==1)pM-=curBet,pot+=curBet;
-    if(cho==2)curBet+=5, pM-=curBet, pot+=curBet;
-    if(cho==3)return true;
-    return false;   
+    if(cho==1){
+        pM-=curBet,pot+=curBet;
+    }
+    if(cho==2){
+        curBet+=5,pM-=curBet,pot+=curBet;
+    }
+    if(cho==3)return 1;
+    if(pM==0) return 2;
+    return 0;   
 }
 //comp bet
-bool compBet(short &cM,short &curBet,short &pot){
+short compBet(short &cM,short &cB,short &curBet,short &pot){
     //variables
     short cho;
+    cout<<"The current bet is $"<<curBet<<endl;
+    cout<<"pot= $"<<pot<<endl;
     cout<<"It is Phil's turn to bet:"<<endl;
     cho=rand()%3+1;
     if(cho==1){
@@ -137,19 +162,21 @@ bool compBet(short &cM,short &curBet,short &pot){
         if(curBet>0) cout<<"Phil calls the bet."<<endl;
     }
     if(cho==2){
-        curBet+=5, cM-=curBet, pot+=curBet;
+        curBet+=5,cM-=curBet,pot+=curBet;
         cout<<"Phil raises $5."<<endl;
     }
     if(cho==3){
         cout<<"Phil folds."<<endl;
-        return true;
+        return 1;
     }
-    if(cM==0) cout<<"Phil is All-In"<<endl;
-    return false;
+    if(cM==0){
+        cout<<"Phil is All-In"<<endl;
+        return 2;
+    }
+    return 0;
 }
 //check to see if betting is complete
-bool check(short pB,short cB,short pM,short cM,short curBet){
-    if(pB==cB)return true;
-    if(pM==0)
+bool check(short pB,short cB,short curBet){
+    if(pB==curBet&&cB==curBet)return true;
     return false;
 }
