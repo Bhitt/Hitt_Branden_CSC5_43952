@@ -2,7 +2,7 @@
  * File:   main.cpp
  * Author: Branden Hitt
  * Created on May 6, 2015, 1:02 PM
- * Notes for next update: work on betting
+ * Notes for next update: work on betting format, 3rd high card, all-Ins
  *      Purpose: Head's Up Texas Hold'em
  */
 
@@ -36,11 +36,12 @@ void worth(short,short,short);//displays money totals
 bool anteUp(short &, short &, short &);// calls ante
 bool indAnte(short &,short &);//individual ante
 bool bet(short &,short &, short &,bool,bool &,bool &);// main betting function
-bool playBet(short &,short &,short &,short &,bool &);
-bool compBet(short &,short &,short &,short &,bool &);
-bool check(short,short,short,bool &,bool &);
+void playBet(short &,short &,short &,short &,bool &,short);//player bet function
+void compBet(short &,short &,short &,short &,bool &,short);//computer bet function
+bool check(short,short,short,bool &,bool &,short,short);//check to end betting round
 void award(short &,short);//award pot to winner
 void split(short &,short &,short &);//split the pot for ties
+bool cease(short,short,bool,bool);//all in or fold for skip
 //Execution Begins Here!
 int main(int argc, char** argv) {
     //Declare Variables
@@ -57,7 +58,7 @@ int main(int argc, char** argv) {
     short rWin=0;//current round win
     float perWin; int totR=0;//percentage of wins for the player/ totals rounds
     iniDeck(deck,SIZE);//fill array with card values (1-52)
-    cout<<"This is a table for Heads Up Texas Hold'em."<<endl;
+    cout<<"This is a table for Heads Up Limit Texas Hold'em."<<endl;
     //Prompt for rules
     cout<<"If you would like instructions on how to play, enter in 'I' now:"<<endl;
     cout<<"otherwise, enter in 'N'"<<endl;
@@ -78,7 +79,7 @@ int main(int argc, char** argv) {
     cout<<"Across from you is poker legend, Phil Hellmuth."<<endl;
     cout<<"Phil is a 13 time World Series of Poker Champion with"<<endl;
     cout<<"$18,282,014 in winnings!"<<endl;
-    cout<<"Please hit enter twice to continue"<<endl;
+    cout<<"Please hit enter to continue"<<endl;
     cin.get();
     cin.ignore();
     do{//do
@@ -89,13 +90,12 @@ int main(int argc, char** argv) {
         //Shuffle 
         iniDeck(deck,SIZE);
         totR++;//increment the total rounds
-        cout<<"*************************"<<endl;
     }while(pl1M>0&&pl2M>0);//while player wants to repeat
     //Congratulate Overall Winner
     cout<<"*************************"<<endl;
     short highRW=p1Rw;
-    winner=player1;
-    if(p2Rw>highRW) winner="Phil Helmuth ", highRW=p2Rw;
+    if(pl2M==0)winner=player1;
+    if(pl1M==0)winner="Phil Helmuth ", highRW=p2Rw;
     cout<<"Congrats to "<<winner<<" for being the table's big winner."<<endl;
     cout<<winner<<" takes home $100"<<endl;
     cout<<"Out of "<<totR<<" total hands, "<<winner<<" won "<<highRW<<" hands of Poker."<<endl;
@@ -105,6 +105,8 @@ int main(int argc, char** argv) {
     perWin=((p1Rw*1.0f)/totR)*100.0f;
     //output results to a file
     fout<<fixed<<setprecision(2)<<showpoint;
+    if(winner==player1)fout<<"Cash Win: $50"<<endl;
+    else fout<<"Cash Loss: $50"<<endl;
     fout<<"Player name : "<<player1<<endl;
     fout<<"Hand Wins  : "<<p1Rw<<endl;
     fout<<"Total Rounds: "<<totR<<endl;
@@ -238,7 +240,6 @@ void rules(){
     cout<<"Would you like to view another Hand Ranking?"<<endl;
     cout<<"Enter in Y for yes or N for no:"<<endl;
     cin>>cho;//prompt for repeat
-    cout<<"*************************"<<endl;
     }
     }while(cho=='Y'||cho=='y');//while player wants to repeat
 }
@@ -272,10 +273,12 @@ short round(string z,short x[],short &pl1M,short &pl2M,bool &button){
     //get ante
     cout<<"*************************"<<endl;
     worth(pl1M,pl2M,pot);
+    cout<<"New Round"<<endl;
     cout<<"Please hit enter to ante up:"<<endl;
     cin.get();
     cin.ignore();
     skip=anteUp(pl1M,pl2M,pot);
+    if(skip) cout<<"A player is All-In from the Ante"<<endl;
     //display totals
     cout<<"*************************"<<endl;
     worth(pl1M,pl2M,pot);
@@ -295,7 +298,6 @@ short round(string z,short x[],short &pl1M,short &pl2M,bool &button){
     if(!skip){
         skip=bet(pl1M,pl2M,pot,button,playFold,comFold);
     }
-    cout<<"*************************"<<endl;
     //Deal 3 Community Cards (Flop)
     deal1(com1,x);
     deal1(com2,x);
@@ -311,7 +313,7 @@ short round(string z,short x[],short &pl1M,short &pl2M,bool &button){
         //betting round 2
         skip=bet(pl1M,pl2M,pot,button,playFold,comFold);
     }
-    cout<<"*************************"<<endl;
+    if(!skip)cout<<"*************************"<<endl;
     //Deal 1 Community Card (Turn)
     deal1(com4,x);
     if(!skip){
@@ -344,9 +346,11 @@ short round(string z,short x[],short &pl1M,short &pl2M,bool &button){
     plR=sRank(usrHand);
     ai1R=sRank(ai1Hand);
     //display final community cards
+    if(!skip)cout<<"*************************"<<endl;
     cout<<"Your Hole Cards: "<<cardVal(c1)<<"|"<<cardVal(c2)<<endl;
     cout<<"Community Cards: "<<cardVal(com1)<<"|"<<cardVal(com2)<<"|"<<cardVal(com3)<<
                 "|"<<cardVal(com4)<<"|"<<cardVal(com5)<<endl;
+    cout<<"*************************"<<endl;
     //state player hand value
     if(usrHand==1)cout<<"Your hand value is low with just a high card ("<<cardVal(pf5)<<")."<<endl;
     if(usrHand==2)cout<<"Your hand value is average with just a pair."<<endl;
@@ -370,17 +374,20 @@ short round(string z,short x[],short &pl1M,short &pl2M,bool &button){
     }
     //Unveil all hands
     cout<<"*************************"<<endl;
+    worth(pl1M,pl2M,pot);
     cout<<"               All Player Hands     "<<endl;
     cout<<"Community Cards: "<<cardVal(com1)<<"|"<<cardVal(com2)<<"|"<<cardVal(com3)<<
                 "|"<<cardVal(com4)<<"|"<<cardVal(com5)<<endl;
+    cout<<"**************"<<endl;
     cout<<"Your Hole Cards: "<<cardVal(c1)<<"|"<<cardVal(c2)<<endl;
     cout<<"Your Hand: "<<cardVal(pf1)<<"|"<<cardVal(pf2)<<"|"<<cardVal(pf3)<<
                 "|"<<cardVal(pf4)<<"|"<<cardVal(pf5)<<"  ("<<plR<<")"<<endl;
+    cout<<"*************************"<<endl;
     cout<<"Phil's Hole Cards: "<<cardVal(ai1c1)<<"|"<<cardVal(ai1c2)<<endl;
     cout<<"Phil's Hand: "<<cardVal(cf1)<<"|"<<cardVal(cf2)<<"|"<<cardVal(cf3)<<
                 "|"<<cardVal(cf4)<<"|"<<cardVal(cf5)<<"  ("<<ai1R<<")"<<endl;
     cout<<"*************************"<<endl;
-    if(!skip)cout<<"Please hit enter twice to find the winning hand:"<<endl;
+    if(!skip)cout<<"Please hit enter to find the winning hand:"<<endl;
     if(skip)cout<<"Please hit enter to continue"<<endl;
     cin.get();
     cin.ignore();
@@ -392,19 +399,25 @@ short round(string z,short x[],short &pl1M,short &pl2M,bool &button){
         winNum=winHand(usrHand,ai1Hand,hc,ai1hc,hc2,ai1hc2);//find winNum
     }
     string rndWinr=winner(z,winNum);//find winner name
-    cout<<rndWinr<<" has the winning hand. "<<endl;//state winner
+    if(playFold)cout<<"Phil wins since you folded"<<endl;
+    else if(comFold)cout<<"You win since Phil folded"<<endl;
+    else cout<<rndWinr<<" has the winning hand. "<<endl;//state winner
     cout<<rndWinr<<" wins the pot: $"<<pot<<endl;
     //award pot to winner
     if(winNum==1) award(pl1M,pot);
     if(winNum==2) award(pl2M,pot);
     if(winNum<1||winNum>2)split(pl1M,pl2M,pot);
-    cout<<"Please hit enter twice to continue:"<<endl;
+    cout<<"*************************"<<endl;
+    cout<<"Please hit enter to continue:"<<endl;
     cin.get();
     cin.ignore();
     cout<<"*************************"<<endl;
     //display player totals
     cout<<"Player Totals:"<<endl;
     cout<<"You: $"<<pl1M<<" | Phil: $"<<pl2M<<endl;
+    cout<<"Please hit enter to continue:"<<endl;
+    cin.get();
+    cin.ignore();
     //increment button
     if(button==false) button=true;
     else if(button==true) button=false;
@@ -654,7 +667,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h1,h2,a,b,c,placeH,placeH2);
     if(temp>high) bestCom=1, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=1,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=1,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=1,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -662,7 +675,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h1,h2,a,c,d,placeH,placeH2);
     if(temp>high) bestCom=2, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=2,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=2,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=2,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -670,7 +683,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h1,h2,a,d,e,placeH,placeH2);
     if(temp>high) bestCom=3, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=3,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=3,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=3,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -678,7 +691,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h1,h2,a,b,d,placeH,placeH2);
     if(temp>high) bestCom=4, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=4,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=4,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=4,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -686,7 +699,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h1,h2,a,b,e,placeH,placeH2);
     if(temp>high) bestCom=5, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=5,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=5,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=5,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -694,7 +707,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h1,h2,a,c,e,placeH,placeH2);
     if(temp>high) bestCom=6, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=6,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=6,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=6,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -702,7 +715,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h1,h2,b,c,d,placeH,placeH2);
     if(temp>high) bestCom=7, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=7,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=7,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=7,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -710,7 +723,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h1,h2,b,c,e,placeH,placeH2);
     if(temp>high) bestCom=8, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=8,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=8,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=8,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -718,7 +731,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h1,h2,b,d,e,placeH,placeH2);
     if(temp>high) bestCom=9, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=9,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=9,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=9,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -726,7 +739,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h1,h2,c,d,e,placeH,placeH2);
     if(temp>high) bestCom=10, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=10,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=10,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=10,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -735,7 +748,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h1,a,b,c,d,placeH,placeH2);
     if(temp>high) bestCom=11, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=11,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=11,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=11,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -743,7 +756,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h1,a,b,c,e,placeH,placeH2);
     if(temp>high) bestCom=12, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=12,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=12,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=12,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -751,7 +764,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h1,a,c,d,e,placeH,placeH2);
     if(temp>high) bestCom=13, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=13,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=13,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=13,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -759,7 +772,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h1,a,b,d,e,placeH,placeH2);
     if(temp>high) bestCom=14, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=14,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=14,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=14,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -767,7 +780,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h1,b,c,d,e,placeH,placeH2);
     if(temp>high) bestCom=15, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=15,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=15,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=15,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -776,7 +789,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h2,a,b,c,d,placeH,placeH2);
     if(temp>high) bestCom=16, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=16,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=16,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=16,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -784,7 +797,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h2,a,b,c,e,placeH,placeH2);
     if(temp>high) bestCom=17, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=17,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=17,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=17,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -792,7 +805,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h2,a,c,d,e,placeH,placeH2);
     if(temp>high) bestCom=18, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=18,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=18,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=18,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -800,7 +813,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h2,a,b,d,e,placeH,placeH2);
     if(temp>high) bestCom=19, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=19,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=19,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=19,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -808,7 +821,7 @@ short bestCom(short a,short b,short c,short d,short e,short h1,short h2){
     temp=ranking(h2,b,c,d,e,placeH,placeH2);
     if(temp>high) bestCom=20, high=temp;
     if(temp==high){
-        if(placeH>curHC)bestCom=20,high=temp,curHC=placeH;
+        if(placeH>curHC)bestCom=20,high=temp,curHC=placeH,curHC2=placeH2;
         if(placeH==curHC){
             if(placeH2>curHC)bestCom=20,high=temp,curHC=placeH,curHC2=placeH2;
         }
@@ -880,7 +893,7 @@ string winner(string you,short a){
 //*                Worth                      *//
 //*********************************************//
 void worth(short a,short b,short p){
-    cout<<"You =$"<<a<<" Phil =$"<<b<<" Pot =$"<<p<<endl;
+    cout<<"You:$"<<a<<" | Phil:$"<<b<<" | Pot:$"<<p<<endl;
 }
 //*********************************************//
 //*                AnteUp                      *//
@@ -920,97 +933,134 @@ bool bet(short &pM,short &cM, short &pot,bool button,bool &playFold,bool &comFol
            //call player bet
            if(!stop&&!comFold){
                if(tally<1)cout<<"You bet first:"<<endl;
-               skip=playBet(pM,pB,curBet,pot,playFold); 
+               playBet(pM,pB,curBet,pot,playFold,cM); 
            }
            tally++;
-           if(tally>1)stop=check(pB,cB,curBet,playFold,comFold);
+           if(tally>1)stop=check(pB,cB,curBet,playFold,comFold,pM,cM);
        }
        //call computer bet
        if(!stop&&!playFold){
            if(tally<1)cout<<"Phil bets first:"<<endl;
-           skip=compBet(cM,cB,curBet,pot,comFold);
+           compBet(cM,cB,curBet,pot,comFold,pM);
            tally++;
-           if(tally>1)stop=check(pB,cB,curBet,playFold,comFold);
+           if(tally>1)stop=check(pB,cB,curBet,playFold,comFold,pM,cM);
        }
        if(button==false){
            //call player bet
            if(!stop&&!comFold){
-           skip=playBet(pM,pB,curBet,pot,playFold);
+           playBet(pM,pB,curBet,pot,playFold,cM);
            tally++;
-           stop=check(pB,cB,curBet,playFold,comFold);
+           stop=check(pB,cB,curBet,playFold,comFold,pM,cM);
            }
        }
        //check for raises
-       stop=check(pB,cB,curBet,playFold,comFold);
+       stop=check(pB,cB,curBet,playFold,comFold,pM,cM);
     }while(stop==false);
+    skip=cease(pM,cM,playFold,comFold);
+    worth(pM,cM,pot);
     return skip;
 }
 //*********************************************//
 //*            Player Bet                     *//
 //*********************************************//
-bool playBet(short &pM,short &pB,short &curBet,short &pot,bool &playFold){
+void playBet(short &pM,short &pB,short &curBet,short &pot,bool &playFold,short cM){
     //variables
     short cho;
     //display current bet
-    cout<<"The current bet is $"<<curBet<<endl;
-    cout<<"pot= $"<<pot<<endl;
+    worth(pM,cM,pot);
+    if(pB>0)cout<<"Your previous bet: $"<<pB<<endl;
+    cout<<"Current bet to match: $"<<curBet<<endl;
+    cout<<"Pot:$"<<pot<<endl;
     //prompt for bet
     do{
-    cout<<"Enter in 1-call/check $"<<curBet<<":"<<endl;
-    cout<<"         2-raise/bet $5 :"<<endl;
-    cout<<"         3-fold         :"<<endl;
-    cin>>cho;
+        if(curBet==0)cout<<"Enter in 1-check $"<<curBet<<":"<<endl;
+        if(curBet>0)cout<<"Enter in 1-call $"<<curBet<<":"<<endl;
+        if((curBet>0)&&(cM>0)&&(pM>5))cout<<"         2-re-raise $"<<curBet+5<<":"<<endl;
+        if((curBet==0)&&(cM>0))cout<<"         2-bet   $"<<curBet+5<<":"<<endl;
+        cout<<"         3-fold:"<<endl;
+        cin>>cho;
     }while(cho<1||cho>3);
     if(cho==1){
-        pM-=curBet,pot+=curBet,pB=curBet;
+        if((curBet-pB)>pM)pot+=pM,pM-=pM;
+        else pM-=(curBet-pB),pot+=(curBet-pB),pB=curBet;
     }
     if(cho==2){
-        curBet+=5,pM-=curBet,pot+=curBet,pB=curBet;
+        if((curBet-pB)>pM)pot+=pM,pM-=pM;
+        curBet+=5,pM-=(curBet-pB),pot+=(curBet-pB),pB=curBet;
     }
     if(cho==3){
         playFold=true;
-        return true;
     }
-    if(pM==0) return true;
-    return false;   
+    if(pM==0){
+        cout<<"You are All-In!"<<endl;
+        worth(pM,cM,pot);
+    }   
 }
 //*********************************************//
 //*             Computer Bet                  *//
 //*********************************************//
-bool compBet(short &cM,short &cB,short &curBet,short &pot,bool &comFold){
+void compBet(short &cM,short &cB,short &curBet,short &pot,bool &comFold,short pM){
     //variables
     short cho;
-    cout<<"The current bet is $"<<curBet<<endl;
-    cout<<"pot= $"<<pot<<endl;
+    cout<<"*************************"<<endl;
+    worth(pM,cM,pot);
+    if(cB>0)cout<<"Phil's previous bet $"<<cB<<endl;
+    cout<<"The current bet to match is $"<<curBet<<endl;
+    cout<<"Pot:$"<<pot<<endl;
     cout<<"It is Phil's turn to bet:"<<endl;
     if(curBet==0)cho=rand()%8+1;
+    else if((curBet-cB)>=cM)cho=1;
     else cho=rand()%10+1;
     if(cho<=5){
-        cM-=curBet,pot+=curBet,cB=curBet;
+        if((curBet-cB)>cM)pot+=cM,cM-=cM;
+        else cM-=(curBet-cB),pot+=(curBet-cB),cB=curBet;
         if(curBet==0) cout<<"Phil checks."<<endl;
         if(curBet>0) cout<<"Phil calls the bet."<<endl;
+        cout<<"*************************"<<endl;
+        cout<<"Please hit enter to continue:"<<endl;
+        cin.get();
+        cin.ignore();
+        cout<<"*************************"<<endl;
     }
     if(cho>5&&cho<=8){
-        curBet+=5,cM-=curBet,pot+=curBet,cB=curBet;
-        cout<<"Phil raises $5."<<endl;
+        if(curBet==0)cout<<"Phil bets $5."<<endl;
+        if(curBet>0)cout<<"Phil re-raises to $";
+        curBet+=5,cM-=(curBet-cB),pot+=(curBet-cB),cB=curBet;
+        cout<<curBet<<endl;
+        cout<<"*************************"<<endl;
+        cout<<"Please hit enter to continue:"<<endl;
+        cin.get();
+        cin.ignore();
+        cout<<"*************************"<<endl;
     }
     if(cho>8){
         cout<<"Phil folds."<<endl;
+        cout<<"*************************"<<endl;
+        cout<<"Please hit enter to continue:"<<endl;
+        cin.get();
+        cin.ignore();
+        cout<<"*************************"<<endl;
         comFold=true;
-        return true;
     }
     if(cM==0){
+        curBet==cB;
         cout<<"Phil is All-In"<<endl;
-        return true;
+        worth(pM,cM,pot);
+        cout<<"*************************"<<endl;
+        cout<<"Please hit enter to continue:"<<endl;
+        cin.get();
+        cin.ignore();
+        cout<<"*************************"<<endl;
     }
-    return false;
 }
 //*********************************************//
 //*           Check for Bet end               *//
 //*********************************************//
-bool check(short pB,short cB,short curBet,bool &playFold,bool &comFold){
+bool check(short pB,short cB,short curBet,bool &playFold,bool &comFold,short pM,short cM){
     if(pB==curBet&&cB==curBet)return true;
     if(playFold==true||comFold==true)return true;
+    if(cM==0&&pB>=curBet)return true;
+    if(pM==0&&cB>=curBet)return true;
     return false;
 }
 //*********************************************//
@@ -1026,4 +1076,11 @@ void split(short &a,short &b,short &pot){
     short temp=pot/2;
     a+=temp;
     b+=temp;
+}
+//*********************************************//
+//*           All in or Fold                  *//
+//*********************************************//
+bool cease(short pM,short cM,bool playFold,bool comFold){
+    if((pM==0)||(cM==0)||(playFold==true)||comFold==true)return true;
+    else return false;
 }
