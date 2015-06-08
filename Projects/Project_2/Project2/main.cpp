@@ -2,7 +2,7 @@
  * File:   main.cpp
  * Author: Branden Hitt
  * Created on May 6, 2015, 1:02 PM
- * Notes for next update: work on betting format, 3rd high card, all-Ins
+ * Notes for next update: 
  *      Purpose: Head's Up Texas Hold'em
  */
 
@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     short pl1M=50,pl2M=50;//beginning money total
     bool button=true;//dealer button
     string winner, player1;//overall winner and player name input
-    const short SIZE=53;//size of the deck
+    const short SIZE=56;//size of the deck
     short deck[SIZE]={};//declare array with zeros
     short rWin=0;//current round win
     float perWin; int totR=0;//percentage of wins for the player/ totals rounds
@@ -924,7 +924,7 @@ bool indAnte(short &a, short &p){
 //*********************************************//
 bool bet(short &pM,short &cM, short &pot,bool button,bool &playFold,bool &comFold){
     //declare variables
-    bool stop,skip;
+    bool stop=false,skip=false;
     short tally=0;//tally to make sure both players bet at least once
     short pB=0,cB=0,curBet=0;//player/computer total bet and current bet
     short allFold;
