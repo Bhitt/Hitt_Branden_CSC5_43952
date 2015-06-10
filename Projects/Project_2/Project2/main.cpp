@@ -42,18 +42,27 @@ bool check(short,short,short,bool &,bool &,short,short);//check to end betting r
 void award(short &,short);//award pot to winner
 void split(short &,short &,short &);//split the pot for ties
 bool cease(short,short,bool,bool);//all in or fold for skip
+void loose(char [][2],bool=true);//fill 2d array
 //Execution Begins Here!
 int main(int argc, char** argv) {
     //Declare Variables
+    ifstream fin;
     ofstream fout;//output to file
     fout.open("Results.Dat");//open file
+    fin.open("Greet.text");//open greeting file
+    string greet;
+    getline(fin,greet);
+    cout<<greet<<endl;
     srand(static_cast<unsigned int>(time(0)));//set random seed
     char info,repeat;//input for info query, and repeat query
     short p1Rw=0,p2Rw=0;//total wins for each player
     short pl1M=50,pl2M=50;//beginning money total
     bool button=true;//dealer button
     string winner, player1;//overall winner and player name input
-    const short SIZE=56;//size of the deck
+    const short SIZE=53;//size of the deck
+    bool lobo=true;//bool for 2d array
+    char ends[2][2];//declare 2d array
+    loose(ends,lobo);//fill array
     short deck[SIZE]={};//declare array with zeros
     short rWin=0;//current round win
     float perWin; int totR=0;//percentage of wins for the player/ totals rounds
@@ -101,7 +110,7 @@ int main(int argc, char** argv) {
     cout<<"Out of "<<totR<<" total hands, "<<winner<<" won "<<highRW<<" hands of Poker."<<endl;
     cout<<"Thank you for playing!"<<endl;
     cout<<endl;
-    cout<<"(Your results can be found in Results.dat)"<<endl;
+    cout<<"(Your results can be found in Results.Dat)"<<endl;
     perWin=((p1Rw*1.0f)/totR)*100.0f;
     //output results to a file
     fout<<fixed<<setprecision(2)<<showpoint;
@@ -112,6 +121,7 @@ int main(int argc, char** argv) {
     fout<<"Total Rounds: "<<totR<<endl;
     fout<<"Percent Win : %"<<perWin;
     fout.close();
+    fin.close();
     //Exit Stage Right!
     return 0;
 }
@@ -1083,4 +1093,9 @@ void split(short &a,short &b,short &pot){
 bool cease(short pM,short cM,bool playFold,bool comFold){
     if((pM==0)||(cM==0)||(playFold==true)||comFold==true)return true;
     else return false;
+}
+//Fill 2D array
+void loose(char a[][2],bool){
+    a[0][0]='1',a[0][1]='2';
+    a[1][0]='3',a[1][1]='4';
 }
